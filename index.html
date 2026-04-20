@@ -3,173 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KasiHub | The Ultimate Build</title>
+    <title>KasiHub | The Social Empire</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --kasi-green: #2ecc71; --kasi-dark: #050505; --card: #121212; --blue-badge: #3ea6ff; --gold-badge: #f1c40f; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background: #000; color: white; font-family: 'Roboto', sans-serif; }
 
-        /* LOADER */
-        #site-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; transition: 0.5s; }
-        .loading-bar-container { width: 200px; background: #1a1a1a; height: 4px; border-radius: 2px; margin-top: 20px; overflow: hidden; }
+        /* 1. INTRO ANIMATION */
+        #site-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; transition: 0.8s; }
+        .loading-logo { display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; color: white; margin-bottom: 25px; letter-spacing: 2px; }
+        .logo-icon { width: 45px; height: 45px; border-radius: 12px; border: 4px solid var(--kasi-green); display: flex; align-items: center; justify-content: center; margin-right: 15px; color: var(--kasi-green); position: relative; }
+        .logo-icon::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 8px; background: rgba(46, 204, 113, 0.2); animation: glow 2s infinite; }
+        @keyframes glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; transform: scale(1.1); } }
+        .loading-bar-container { width: 200px; background: #1a1a1a; height: 4px; border-radius: 2px; overflow: hidden; }
         .loading-bar-fill { height: 100%; background: var(--kasi-green); width: 0%; transition: 0.1s linear; }
 
-        /* AUTH POPUP - FIXED VISIBILITY */
-        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(10px); }
+        /* 2. AUTHENTICATION MODAL */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(10px); }
         .auth-card { background: #111; padding: 30px; border-radius: 20px; width: 350px; border: 1px solid #222; text-align: center; }
         .auth-input { width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 10px; color: white; margin-bottom: 15px; box-sizing: border-box; }
-        
-        /* APP LAYOUT */
-        #main-site { display: none; width: 100%; height: 100vh; display: flex; opacity: 0; transition: 1s; }
+        .badge-select { display: flex; gap: 8px; margin-bottom: 20px; }
+        .badge-opt { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; font-size: 10px; cursor: pointer; transition: 0.3s; }
+        .badge-opt.selected { border-color: var(--kasi-green); background: rgba(46, 204, 113, 0.1); }
+
+        /* 3. MAIN APP LAYOUT */
+        #main-site { display: none; width: 100%; height: 100vh; opacity: 0; transition: 1s; }
         #main-site.loaded { display: flex !important; opacity: 1; }
 
         nav { width: 240px; background: #000; border-right: 1px solid #1a1a1a; padding: 15px; display: flex; flex-direction: column; }
-        .nav-link { padding: 12px; display: flex; align-items: center; color: #f1f1f1; text-decoration: none; border-radius: 10px; margin-bottom: 5px; cursor: pointer; }
-        .nav-link.active { background: #1a1a1a; color: var(--kasi-green); }
+        .nav-link { padding: 12px; display: flex; align-items: center; color: #f1f1f1; text-decoration: none; border-radius: 10px; margin-bottom: 5px; cursor: pointer; font-size: 14px; }
+        .nav-link i { margin-right: 15px; width: 20px; text-align: center; font-size: 18px; }
+        .nav-link.active, .nav-link:hover { background: #1a1a1a; color: var(--kasi-green); }
 
-        main { flex-grow: 1; overflow-y: auto; padding: 20px 40px; background: #080808; }
-        .page-content { display: none; max-width: 700px; margin: 0 auto; }
+        main { flex: 1; overflow-y: auto; padding: 20px 40px; background: #080808; border-right: 1px solid #1a1a1a; }
+        
+        /* 4. TRENDS SIDEBAR (NEW) */
+        aside { width: 320px; background: #000; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        .trend-card { background: var(--card); border-radius: 15px; padding: 15px; border: 1px solid #222; }
+        .trend-card h4 { margin: 0 0 10px 0; color: var(--kasi-green); font-size: 14px; text-transform: uppercase; }
+
+        .page-content { display: none; max-width: 700px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .active-page { display: block !important; }
 
-        .primary-btn { background: var(--kasi-green); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; width: 100%; }
-        .secondary-btn { background: #222; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; margin-bottom: 10px; width: 100%; font-size: 12px; }
+        /* 5. POSTING UI */
+        .post-creator { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 30px; }
+        .post-input { width: 100%; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; }
+        .wall-post { background: var(--card); border-radius: 15px; border: 1px solid #222; padding: 20px; margin-bottom: 20px; }
+        .post-user { display: flex; align-items: center; margin-bottom: 12px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #222; margin-right: 12px; }
         
-        /* VIDEO FEED STYLES */
-        .video-card { background: var(--card); border-radius: 15px; overflow: hidden; margin-bottom: 20px; border: 1px solid #222; }
-        video { width: 100%; display: block; background: #000; }
+        .primary-btn { background: var(--kasi-green); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .panic-btn { background: #e74c3c; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: auto; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="site-loader">
-    <h2 style="letter-spacing:4px;">KASI<span>HUB</span></h2>
+    <div class="loading-logo"><div class="logo-icon">K</div>KASI<span>HUB</span></div>
     <div class="loading-bar-container"><div class="loading-bar-fill" id="load-progress"></div></div>
 </div>
 
 <div id="auth-overlay">
     <div class="auth-card" id="signup-box">
-        <h3>Create Kasi Profile</h3>
-        <button class="secondary-btn" onclick="getLocation()"><i class="fa fa-location-arrow"></i> Detect My Kasi (GPS)</button>
-        <input type="text" id="reg-user" class="auth-input" placeholder="Display Name">
+        <h3>Join the Community</h3>
+        <input type="text" id="reg-user" class="auth-input" placeholder="Full Name">
         <input type="email" id="reg-email" class="auth-input" placeholder="Email">
         <input type="password" id="reg-pass" class="auth-input" placeholder="Password">
-        <input type="text" id="reg-kasi" class="auth-input" placeholder="Kasi Name (Detected automatically)">
-        <button class="primary-btn" onclick="handleSignUp()">Sign Up</button>
-        <p onclick="toggleAuth()" style="cursor:pointer; font-size:12px; margin-top:15px; color:var(--kasi-green);">Already have an account? Login</p>
+        <input type="text" id="reg-kasi" class="auth-input" placeholder="Kasi (e.g. Parys)">
+        <div class="badge-select">
+            <div class="badge-opt selected" onclick="pickBadge('standard', this)">Citizen</div>
+            <div class="badge-opt" onclick="pickBadge('blue', this)" style="color:var(--blue-badge)">Leader</div>
+            <div class="badge-opt" onclick="pickBadge('gold', this)" style="color:var(--gold-badge)">Business</div>
+        </div>
+        <button class="primary-btn" style="width:100%" onclick="handleSignUp()">Create Account</button>
+        <p style="font-size:12px; margin-top:15px; color:#666;">Have an account? <span style="color:var(--kasi-green); cursor:pointer;" onclick="toggleAuth()">Login</span></p>
     </div>
     <div class="auth-card" id="login-box" style="display:none;">
-        <h3>Login</h3>
+        <h3>Welcome Back</h3>
         <input type="email" id="login-email" class="auth-input" placeholder="Email">
         <input type="password" id="login-pass" class="auth-input" placeholder="Password">
-        <button class="primary-btn" onclick="handleLogin()">Login</button>
-        <p onclick="toggleAuth()" style="cursor:pointer; font-size:12px; margin-top:15px; color:var(--kasi-green);">New? Create Account</p>
+        <button class="primary-btn" style="width:100%" onclick="handleLogin()">Login</button>
+        <p style="font-size:12px; margin-top:15px; color:#666;">New here? <span style="color:var(--kasi-green); cursor:pointer;" onclick="toggleAuth()">Sign Up</span></p>
     </div>
 </div>
 
 <div id="main-site">
     <nav>
-        <div style="font-size: 20px; font-weight: 900; color: var(--kasi-green); margin-bottom: 30px;">KASIHUB</div>
-        <div class="nav-link active" onclick="showPage('wall', this)"><i class="fa fa-home"></i> Wall</div>
-        <div class="nav-link" onclick="showPage('studio', this)"><i class="fa fa-video"></i> Studio</div>
-        <button onclick="logout()" class="secondary-btn" style="margin-top:auto;">Logout</button>
+        <div style="font-size: 20px; font-weight: 900; color: var(--kasi-green); margin-bottom: 30px; padding-left: 10px;">KASI<span>HUB</span></div>
+        <div class="nav-link active" onclick="showPage('wall', this)"><i class="fa fa-users"></i> Kasi Wall</div>
+        <div class="nav-link" onclick="showPage('mall', this)"><i class="fa fa-store"></i> Kasi Mall</div>
+        <div class="nav-link" onclick="showPage('profile', this)"><i class="fa fa-user-circle"></i> My Profile</div>
+        <button class="panic-btn">EMERGENCY</button>
     </nav>
 
     <main>
         <section id="wall" class="page-content active-page">
-            <h1>Kasi Wall</h1>
+            <div class="post-creator">
+                <textarea class="post-input" placeholder="What's happening in Parys?" rows="2"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                    <div style="color:#666;"><i class="fa fa-image" style="cursor:pointer; margin-right:15px;"></i><i class="fa fa-video" style="cursor:pointer;"></i></div>
+                    <button class="primary-btn" onclick="addNewPost()">Post to Wall</button>
+                </div>
+            </div>
             <div id="kasi-feed"></div>
         </section>
 
-        <section id="studio" class="page-content">
-            <h1>Kasi Studio</h1>
-            <div style="border: 2px dashed #333; padding: 40px; text-align: center; border-radius: 20px;">
-                <i class="fa fa-cloud-upload-alt fa-3x" style="color:var(--kasi-green)"></i>
-                <h3>Upload Video to KasiHub</h3>
-                <input type="file" id="video-file" accept="video/*" style="display:none" onchange="uploadToCloudinary(this.files[0])">
-                <button class="primary-btn" onclick="document.getElementById('video-file').click()" style="width:auto; margin-top:10px;">Select Video</button>
-                <p id="upload-status" style="margin-top:10px; font-size:12px; color:#888;"></p>
-            </div>
+        <section id="profile" class="page-content" style="text-align:center;">
+            <div class="user-avatar" style="width:80px; height:80px; margin: 0 auto 20px;"></div>
+            <h2 id="user-welcome">Citizen</h2>
+            <p id="user-kasi" style="color:#666;"></p>
+            <button class="primary-btn" onclick="logout()" style="background:#222; color:white;">Sign Out</button>
         </section>
+
+        <section id="mall" class="page-content"><h1>Kasi Mall</h1><p>Coming Soon...</p></section>
     </main>
+
+    <aside>
+        <div class="trend-card">
+            <h4><i class="fa fa-play-circle"></i> SABC News Live</h4>
+            <iframe width="100%" height="150" src="https://www.youtube.com/embed/live_stream?channel=UC8yH-uI81UUtEMDsowQyx1g" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>
+        </div>
+        <div class="trend-card">
+            <h4><i class="fa fa-trophy"></i> Soccer Updates</h4>
+            <div style="font-size:12px; color:#ccc;">
+                <p>⚽ <b>PSL:</b> Kaizer Chiefs vs Orlando Pirates (Sat 15:00)</p>
+                <hr style="border:0; border-top:1px solid #333;">
+                <p>⚽ <b>SuperSport:</b> Highlights Loading...</p>
+            </div>
+        </div>
+        <div class="trend-card">
+            <h4><i class="fa fa-bolt"></i> Loadshedding Parys</h4>
+            <div style="background:#222; padding:10px; border-radius:8px; text-align:center;">
+                <span style="color:var(--gold-badge); font-weight:bold;">Stage 0</span>
+                <div style="font-size:10px;">No outages scheduled</div>
+            </div>
+        </div>
+    </aside>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    const SUPABASE_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co';
+    // === CONFIGURATION === (RE-PASTE YOUR KEYS HERE)
+    const SUPABASE_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co'; 
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
-    const CLOUDINARY_PRESET = 'PASTE_YOUR_CLOUDINARY_PRESET'; // From Cloudinary Settings
-    const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/PASTE_YOUR_CLOUD_NAME/video/upload';
-
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let currentUser = null;
 
-    // 1. STARTUP & AUTH CHECK
+    let currentUser = null;
+    let selectedBadge = 'standard';
+
+    // === STARTUP ENGINE ===
     window.onload = function() {
-        let bar = document.getElementById('load-progress'), w = 0;
+        let bar = document.getElementById('load-progress'), width = 0;
         let id = setInterval(async () => {
-            if (w >= 100) {
+            if (width >= 100) {
                 clearInterval(id);
-                const { data: { user } } = await _supabase.auth.getUser();
-                document.getElementById('site-loader').style.display = 'none';
-                if (user) {
-                    const { data: p } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
-                    currentUser = { ...user, ...p };
-                    enterSite();
-                } else {
-                    document.getElementById('auth-overlay').style.display = 'flex';
-                }
-            } else { w++; bar.style.width = w + '%'; }
+                document.getElementById('site-loader').style.opacity = '0';
+                setTimeout(checkUser, 600);
+            } else {
+                width++; bar.style.width = width + '%';
+            }
         }, 10);
     }
 
-    // 2. GEOLOCATION - GETTING USER ADDRESS
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
-                const data = await res.json();
-                const city = data.address.city || data.address.town || data.address.suburb || "Unknown Kasi";
-                document.getElementById('reg-kasi').value = city;
-                alert("Location Found: " + city);
-            });
+    async function checkUser() {
+        document.getElementById('site-loader').style.display = 'none';
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
+            currentUser = { ...user, ...profile };
+            enterSite();
+        } else {
+            document.getElementById('auth-overlay').style.display = 'flex';
         }
     }
 
-    // 3. CLOUDINARY UPLOAD LOGIC
-    async function uploadToCloudinary(file) {
-        if (!file) return;
-        const status = document.getElementById('upload-status');
-        status.innerText = "Uploading to Cloud... please wait.";
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_PRESET);
-
-        const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-        const data = await res.json();
-
-        if (data.secure_url) {
-            status.innerText = "Upload Successful! Posting to wall...";
-            // Save video link to Supabase
-            await _supabase.from('posts').insert([{
-                user_id: currentUser.id,
-                username: currentUser.username,
-                content: "Check out my new video!",
-                video_url: data.secure_url,
-                location: currentUser.kasi_location
-            }]);
-            location.reload();
-        }
+    // === WALL ACTIONS ===
+    async function addNewPost() {
+        const input = document.querySelector('.post-input');
+        if(!input.value.trim()) return;
+        const { error } = await _supabase.from('posts').insert([{ 
+            user_id: currentUser.id, 
+            content: input.value,
+            username: currentUser.username || "Resident",
+            badge_type: currentUser.badge_type,
+            location: currentUser.kasi_location
+        }]);
+        if(!error) { input.value = ""; loadPosts(); }
     }
 
-    // 4. AUTH & NAVIGATION
+    async function loadPosts() {
+        const { data: posts } = await _supabase.from('posts').select('*').order('created_at', { ascending: false });
+        const feed = document.getElementById('kasi-feed');
+        feed.innerHTML = '';
+        posts.forEach(post => {
+            const badge = post.badge_type === 'blue' ? '<i class="fa fa-check-circle" style="color:#3ea6ff; margin-left:5px;"></i>' : 
+                         (post.badge_type === 'gold' ? '<i class="fa fa-certificate" style="color:#f1c40f; margin-left:5px;"></i>' : '');
+            feed.innerHTML += `
+                <div class="wall-post">
+                    <div class="post-user">
+                        <div class="user-avatar"></div>
+                        <div class="user-info"><b>${post.username}${badge}</b><br><small style="color:#555">${post.location}</small></div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                </div>`;
+        });
+    }
+
+    // === AUTH LOGIC ===
     async function handleSignUp() {
         const email = document.getElementById('reg-email').value, pass = document.getElementById('reg-pass').value;
         const name = document.getElementById('reg-user').value, kasi = document.getElementById('reg-kasi').value;
         const { data, error } = await _supabase.auth.signUp({ email, password: pass });
         if(error) return alert(error.message);
-        await _supabase.from('profiles').insert([{ id: data.user.id, username: name, kasi_location: kasi }]);
-        alert("Account ready! Please log in.");
+        await _supabase.from('profiles').insert([{ id: data.user.id, username: name, kasi_location: kasi, badge_type: selectedBadge }]);
+        alert("Account Created! You can now log in.");
         location.reload();
     }
 
@@ -182,32 +230,19 @@
     function enterSite() {
         document.getElementById('auth-overlay').style.display = 'none';
         document.getElementById('main-site').classList.add('loaded');
+        document.getElementById('user-welcome').innerText = currentUser.username;
+        document.getElementById('user-kasi').innerText = currentUser.kasi_location;
         loadPosts();
     }
 
-    async function loadPosts() {
-        const { data: posts } = await _supabase.from('posts').select('*').order('created_at', { ascending: false });
-        const feed = document.getElementById('kasi-feed');
-        feed.innerHTML = '';
-        posts.forEach(p => {
-            let media = p.video_url ? `<video controls><source src="${p.video_url}" type="video/mp4"></video>` : '';
-            feed.innerHTML += `<div class="wall-post"><b>${p.username}</b> <small>${p.location}</small><p>${p.content}</p>${media}</div>`;
-        });
+    function showPage(p, el) {
+        document.querySelectorAll('.page-content').forEach(pg => pg.classList.remove('active-page'));
+        document.getElementById(p).classList.add('active-page');
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        if(el) el.classList.add('active');
     }
-
-    function toggleAuth() {
-        const s = document.getElementById('signup-box'), l = document.getElementById('login-box');
-        s.style.display = s.style.display === 'none' ? 'block' : 'none';
-        l.style.display = l.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function showPage(id, el) {
-        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
-        document.getElementById(id).classList.add('active-page');
-        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    }
-
+    function pickBadge(t, el) { selectedBadge = t; document.querySelectorAll('.badge-opt').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
+    function toggleAuth() { document.getElementById('signup-box').style.display = (document.getElementById('signup-box').style.display === 'none' ? 'block' : 'none'); document.getElementById('login-box').style.display = (document.getElementById('login-box').style.display === 'none' ? 'block' : 'none'); }
     async function logout() { await _supabase.auth.signOut(); location.reload(); }
 </script>
 </body>
