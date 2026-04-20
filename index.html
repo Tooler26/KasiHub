@@ -1,197 +1,212 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KasiHub | AI Social Empire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KasiHub | The Empire</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { 
-            --kasi-green: #2ecc71; 
-            --kasi-dark: #050505; 
-            --card: rgba(25, 25, 25, 0.85); 
-            --glass: rgba(255, 255, 255, 0.05);
-            --ai-purple: #8e44ad;
-        }
-
-        /* 1. ANIMATED LIVE BACKGROUND */
+        :root { --kasi-green: #2ecc71; --card: rgba(20,20,20,0.9); --glass: rgba(255,255,255,0.05); }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            margin: 0; padding: 0; width: 100%; height: 100vh; 
-            background: radial-gradient(circle at 50% 50%, #0a110a 0%, #000000 100%);
-            background-size: 200% 200%;
-            animation: bgMove 15s ease infinite;
-            color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; 
+            margin: 0; background: #000; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden;
+            background: radial-gradient(circle at top right, #0a1a0a, #000);
         }
-        @keyframes bgMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* 2. UNIVERSAL RESPONSIVE GRID */
-        #main-site { 
+        /* RESPONSIVE GRID SYSTEM */
+        #app-shell { 
             display: grid; 
-            grid-template-columns: 240px 1fr 380px; 
-            height: 100vh; opacity: 0; transition: 0.8s;
-        }
-        #main-site.loaded { opacity: 1; display: grid !important; }
-
-        @media (max-width: 1100px) { #main-site { grid-template-columns: 80px 1fr; } aside { display: none; } }
-        @media (max-width: 600px) { 
-            #main-site { grid-template-columns: 1fr; grid-template-rows: 1fr 70px; }
-            nav { flex-direction: row !important; width: 100% !important; height: 70px; border-top: 1px solid var(--glass); }
+            grid-template-columns: 260px 1fr 380px; 
+            height: 100vh; 
+            transition: 0.5s ease-in-out;
         }
 
-        /* 3. COMPONENTS */
-        nav { background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-right: 1px solid var(--glass); padding: 20px; display: flex; flex-direction: column; }
-        .nav-link { padding: 15px; border-radius: 15px; color: #888; display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
-        .nav-link.active { background: var(--kasi-green); color: #000; font-weight: bold; }
+        /* TABLET VIEW */
+        @media (max-width: 1100px) { #app-shell { grid-template-columns: 80px 1fr; } aside { display: none; } }
 
-        main { overflow-y: auto; padding: 20px; }
-        aside { background: rgba(0,0,0,0.5); border-left: 1px solid var(--glass); padding: 20px; overflow-y: auto; }
+        /* MOBILE VIEW */
+        @media (max-width: 650px) {
+            #app-shell { grid-template-columns: 1fr; grid-template-rows: 1fr 75px; }
+            nav { grid-row: 2; flex-direction: row !important; width: 100% !important; border-top: 1px solid #222; padding: 0 10px !important; }
+            nav .logo, .nav-label, aside, .panic-btn { display: none; }
+            .nav-link { flex-direction: column; font-size: 10px; flex: 1; justify-content: center; }
+            .nav-link i { margin: 0 0 5px 0 !important; font-size: 20px; }
+            main { padding: 15px !important; }
+        }
 
-        .primary-btn { background: var(--kasi-green); border: none; padding: 12px 24px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .primary-btn:active { transform: scale(0.95); }
+        /* COMPONENTS */
+        nav { background: #000; display: flex; flex-direction: column; padding: 25px; border-right: 1px solid #111; z-index: 10; }
+        main { overflow-y: auto; padding: 30px; scroll-behavior: smooth; }
+        aside { background: #000; border-left: 1px solid #111; padding: 20px; overflow-y: auto; }
 
-        /* 4. AI & CHAT FLOATING BUTTONS */
-        .fab-container { position: fixed; bottom: 90px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
-        .fab { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.5); transition: 0.3s; }
-        .fab-ai { background: var(--ai-purple); border: 2px solid #a29bfe; }
-        .fab-support { background: #2980b9; }
+        .nav-link { padding: 15px; display: flex; align-items: center; color: #777; text-decoration: none; border-radius: 12px; margin-bottom: 5px; cursor: pointer; transition: 0.3s; }
+        .nav-link.active { background: var(--kasi-green); color: #000; font-weight: 800; }
+        .nav-link i { margin-right: 15px; font-size: 18px; }
 
-        /* 5. MODALS */
-        .kasi-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 10001; padding: 20px; }
-        .modal-content { background: #111; padding: 30px; border-radius: 25px; border: 1px solid #333; width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .post-card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--glass); margin-bottom: 20px; animation: slideUp 0.5s ease forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* LEGAL FOOTER */
-        .legal-footer { padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; font-size: 12px; color: #555; text-align: center; line-height: 1.8; }
+        /* VIDEO & AI STYLES */
+        video { width: 100%; border-radius: 15px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .ai-fab { position: fixed; bottom: 100px; right: 25px; width: 60px; height: 60px; background: #8e44ad; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 20px rgba(142,68,173,0.4); z-index: 999; border: 2px solid #a29bfe; }
+
+        /* AUTH MODAL */
+        #auth-gate { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-box { background: #111; width: 100%; max-width: 400px; padding: 40px; border-radius: 30px; border: 1px solid #222; text-align: center; }
+        input { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 15px; margin-bottom: 15px; outline: none; }
+        .btn-p { background: var(--kasi-green); color: #000; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; }
+        .btn-p:active { transform: scale(0.96); }
     </style>
 </head>
 <body>
 
-<div id="auth-overlay" style="position:fixed; inset:0; background:#000; z-index:10002; display:none; align-items:center; justify-content:center;">
-    <div class="modal-content" style="text-align:center;">
-        <h2 style="color:var(--kasi-green)">Welcome to KasiHub</h2>
-        <input type="email" id="reg-email" placeholder="Email" style="width:100%; padding:12px; margin:10px 0; border-radius:10px; background:#222; border:1px solid #444; color:white;">
-        <input type="password" id="reg-pass" placeholder="Password" style="width:100%; padding:12px; margin:10px 0; border-radius:10px; background:#222; border:1px solid #444; color:white;">
-        <button class="primary-btn" style="width:100%; margin-top:10px;" onclick="handleLogin()">Login / Sign Up</button>
+<div id="auth-gate">
+    <div class="auth-box">
+        <h1 style="color:var(--kasi-green); margin-bottom:10px;">KASIHUB</h1>
+        <p style="color:#666; margin-bottom:30px;">Sign in to join the community</p>
+        <input type="email" id="auth-email" placeholder="Email Address">
+        <input type="password" id="auth-pass" placeholder="Password">
+        <button class="btn-p" onclick="handleAuth()">CONTINUE</button>
+        <button id="bio-btn" style="background:none; border:none; color:var(--kasi-green); margin-top:20px; cursor:pointer; font-size:12px; display:none;" onclick="startBiometrics()"><i class="fa fa-fingerprint"></i> Use Fingerprint/Face ID</button>
     </div>
 </div>
 
-<div id="ai-modal" class="kasi-modal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="color:var(--ai-purple); margin:0;"><i class="fa fa-robot"></i> Kasi AI</h3>
-            <span onclick="closeModals()" style="cursor:pointer;">&times;</span>
-        </div>
-        <div id="ai-response" style="background:#000; padding:15px; border-radius:15px; margin-bottom:15px; height:200px; overflow-y:auto; font-size:14px; border:1px solid #222;">
-            Ask me anything about Parys, business, or tech!
-        </div>
-        <input type="text" id="ai-input" placeholder="Type your question..." style="width:100%; background:transparent; border:1px solid #444; padding:12px; border-radius:10px; color:white;">
-        <button class="primary-btn" style="background:var(--ai-purple); color:white; width:100%; margin-top:10px;" onclick="askAI()">Ask AI</button>
-    </div>
-</div>
-
-<div id="main-site">
+<div id="app-shell" style="display:none;">
     <nav>
-        <div style="font-size: 24px; font-weight: 900; color: var(--kasi-green); margin-bottom: 30px;">KASI<span>HUB</span></div>
-        <div class="nav-link active" onclick="showPage('wall', this)"><i class="fa fa-home"></i> <span>Feed</span></div>
-        <div class="nav-link" onclick="showPage('invite', this)"><i class="fa fa-user-plus"></i> <span>Invite Friends</span></div>
-        <div class="nav-link" onclick="showPage('mall', this)"><i class="fa fa-store"></i> <span>Market</span></div>
-        <div style="margin-top:auto;">
-            <button class="primary-btn" style="background:#e74c3c; color:white; width:100%;" onclick="alert('Emergency Alert Sent!')">PANIC</button>
-        </div>
+        <div class="logo" style="font-weight:900; font-size:24px; color:var(--kasi-green); margin-bottom:40px;">KASI<span>HUB</span></div>
+        <div class="nav-link active" onclick="showTab('feed', this)"><i class="fa fa-th-large"></i> <span class="nav-label">Empire Wall</span></div>
+        <div class="nav-link" onclick="showTab('invite', this)"><i class="fa fa-paper-plane"></i> <span class="nav-label">Invite Friends</span></div>
+        <div class="nav-link" onclick="showTab('market', this)"><i class="fa fa-store"></i> <span class="nav-label">Kasi Market</span></div>
+        <div class="nav-link" onclick="logout()" style="margin-top:auto;"><i class="fa fa-sign-out-alt"></i> <span class="nav-label">Logout</span></div>
     </nav>
 
-    <main>
-        <section id="wall" class="page-content">
-            <div id="kasi-feed"></div>
-            
-            <div class="legal-footer">
-                <p><b>KasiHub Platform Policies</b></p>
-                <p>© 2026 KasiHub Media. All Rights Reserved. This website complies with the South African Copyright Act. No part of this platform may be reproduced without written permission.</p>
-                <p><b>Google AdSense Compliance:</b> We adhere strictly to the AdSense Program Policies. We do not host prohibited content, and we respect user privacy through our transparent data collection methods.</p>
-                <p>Privacy Policy | Terms of Service | Cookie Policy</p>
+    <main id="main-content">
+        <section id="tab-feed" class="tab-view">
+            <div class="post-card" style="border-bottom: 3px solid var(--kasi-green)">
+                <textarea id="post-input" placeholder="What's the news in the Kasi?" style="width:100%; background:none; border:none; color:white; font-size:18px; resize:none; outline:none;"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; border-top:1px solid #222; padding-top:15px;">
+                    <div>
+                        <label for="video-up" style="cursor:pointer; color:#888;"><i class="fa fa-video"></i> Upload Video</label>
+                        <input type="file" id="video-up" accept="video/*" style="display:none;" onchange="handleVideoUpload(this)">
+                    </div>
+                    <button class="btn-p" style="padding:8px 25px; width:auto;" onclick="publishPost()">Post</button>
+                </div>
             </div>
+            <div id="wall-stream"></div>
+            
+            <footer style="padding:50px 0; text-align:center; opacity:0.3; font-size:11px;">
+                <p>© 2026 KasiHub Media. Compliant with S.A. Copyright Law & Google Publisher Policies.</p>
+                <p>Privacy Policy | Terms of Service | Ad Preferences</p>
+            </footer>
         </section>
 
-        <section id="invite" class="page-content" style="display:none; text-align:center;">
-            <i class="fa fa-users fa-4x" style="color:var(--kasi-green); margin-bottom:20px;"></i>
-            <h2>Expand the Empire</h2>
-            <p style="color:#888;">Invite friends from different Kasis to join the hub!</p>
-            <div style="background:#111; padding:20px; border-radius:20px; border:1px solid #333; margin:20px 0;">
-                <p style="font-size:12px; color:#555;">YOUR INVITE LINK:</p>
-                <b id="invite-link">https://kasihub.co.za/join?ref=Parys_Member</b><br><br>
-                <button class="primary-btn" onclick="copyInvite()">Copy Link</button>
-            </div>
+        <section id="tab-invite" class="tab-view" style="display:none; text-align:center; padding-top:50px;">
+            <i class="fa fa-user-plus fa-4x" style="color:var(--kasi-green)"></i>
+            <h2>Grow the Empire</h2>
+            <p style="color:#666">Share this link to invite friends from other Kasis!</p>
+            <div style="background:#111; padding:20px; border-radius:15px; margin:20px 0; font-family:monospace;" id="my-link">https://kasihub.live/join?ref=Parys_Member</div>
+            <button class="btn-p" onclick="copyLink()">Copy Link</button>
         </section>
     </main>
 
     <aside>
-        <h4 style="color:var(--kasi-green); margin-top:0;">LIVE KASI TV</h4>
-        <iframe width="100%" height="200" src="https://www.youtube.com/embed/live_stream?channel=UC8yH-uI81UUtEMDsowQyx1g" frameborder="0" style="border-radius:15px; margin-bottom:15px;" allowfullscreen></iframe>
-        <iframe width="100%" height="200" src="https://www.youtube.com/embed/live_stream?channel=UC_768mY_S9H_yMv2z9Z4Hkw" frameborder="0" style="border-radius:15px;" allowfullscreen></iframe>
+        <h3 style="font-size:12px; color:var(--kasi-green); letter-spacing:2px; margin-bottom:20px;">24/7 KASI TV</h3>
+        <div style="margin-bottom:25px;">
+            <p style="font-size:12px; margin-bottom:10px;"><i class="fa fa-broadcast-tower"></i> SABC News Live</p>
+            <video controls poster="https://upload.wikimedia.org/wikipedia/en/thumb/4/4a/SABC_News_logo.svg/1200px-SABC_News_logo.svg.png">
+                <source src="https://example.com/live/sabc_news.m3u8" type="application/x-mpegURL">
+                Your browser does not support HLS streaming.
+            </video>
+        </div>
+        <div>
+            <p style="font-size:12px; margin-bottom:10px;"><i class="fa fa-circle" style="color:red; font-size:8px;"></i> Newzroom Afrika</p>
+            <iframe width="100%" height="200" src="https://www.youtube.com/embed/live_stream?channel=UC_768mY_S9H_yMv2z9Z4Hkw" frameborder="0" style="border-radius:15px;" allowfullscreen></iframe>
+        </div>
     </aside>
 </div>
 
-<div class="fab-container">
-    <div class="fab fab-ai" onclick="openAI()" title="Kasi AI Assistant"><i class="fa fa-robot"></i></div>
-    <div class="fab fab-support" onclick="alert('Connecting to Live Agent...')" title="Live Support"><i class="fa fa-headset"></i></div>
-</div>
+<div class="ai-fab" onclick="alert('Kasi AI Initializing...')"><i class="fa fa-robot"></i></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // CONFIG (Paste your keys)
-    const SUPABASE_URL = 'PASTE_URL';
-    const SUPABASE_KEY = 'PASTE_KEY';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const S_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co';
+    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
+    const _db = supabase.createClient(S_URL, S_KEY, { auth: { persistSession: true } });
 
-    window.onload = async () => {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (user) {
-            document.getElementById('main-site').classList.add('loaded');
-            loadPosts();
+    // 1. BIOMETRIC CHECK
+    if (window.PublicKeyCredential) {
+        document.getElementById('bio-btn').style.display = 'block';
+    }
+
+    // 2. AUTH LOGIC
+    async function handleAuth() {
+        const e = document.getElementById('auth-email').value;
+        const p = document.getElementById('auth-pass').value;
+        
+        const { data, error } = await _db.auth.signInWithPassword({ email: e, password: p });
+        
+        if(error) {
+            const { data: up, error: err2 } = await _db.auth.signUp({ email: e, password: p });
+            if(err2) alert(err2.message); else alert("Check email to confirm!");
         } else {
-            document.getElementById('auth-overlay').style.display = 'flex';
+            location.reload();
         }
     }
 
-    // AI LOGIC (Free Public API Example)
-    async function askAI() {
-        const input = document.getElementById('ai-input').value;
-        const resp = document.getElementById('ai-response');
-        if(!input) return;
+    // 3. PAGE LOGIC
+    _db.auth.onAuthStateChange((event, session) => {
+        if (session) {
+            document.getElementById('auth-gate').style.display = 'none';
+            document.getElementById('app-shell').style.display = 'grid';
+            loadFeed();
+        }
+    });
 
-        resp.innerHTML = "Thinking...";
-        // This is a placeholder for a free AI API call like Gemini or Groq
-        setTimeout(() => {
-            resp.innerHTML = "<b>KasiAI:</b> I'm currently processing your request about '" + input + "'. To get the most accurate info, I'm checking Parys community updates!";
-        }, 1000);
+    async function loadFeed() {
+        const { data: posts } = await _db.from('posts').select('*').order('created_at', { ascending: false });
+        const wall = document.getElementById('wall-stream');
+        wall.innerHTML = posts.map(p => `
+            <div class="post-card">
+                <div style="display:flex; align-items:center; margin-bottom:15px;">
+                    <div style="width:40px; height:40px; background:var(--kasi-green); border-radius:10px; margin-right:12px;"></div>
+                    <div><b>${p.username || 'Resident'}</b><br><small style="color:#444">${p.location || 'Kasi'}</small></div>
+                </div>
+                <p>${p.content}</p>
+                ${p.video_url ? `<video controls src="${p.video_url}" style="margin-top:10px;"></video>` : ''}
+            </div>
+        `).join('');
     }
 
-    // UI HELPERS
-    function openAI() { document.getElementById('ai-modal').style.display = 'flex'; }
-    function closeModals() { document.querySelectorAll('.kasi-modal').forEach(m => m.style.display = 'none'); }
-    
-    function showPage(id, el) {
-        document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
+    async function publishPost() {
+        const val = document.getElementById('post-input').value;
+        if(!val) return;
+        const { data: { user } } = await _db.auth.getUser();
+        await _db.from('posts').insert([{ user_id: user.id, content: val, username: user.email.split('@')[0] }]);
+        document.getElementById('post-input').value = "";
+        loadFeed();
+    }
+
+    function showTab(id, el) {
+        document.querySelectorAll('.tab-view').forEach(t => t.style.display = 'none');
+        document.getElementById('tab-' + id).style.display = 'block';
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
     }
 
-    function copyInvite() {
-        navigator.clipboard.writeText(document.getElementById('invite-link').innerText);
-        alert("Invite link copied! Send it to your WhatsApp groups.");
+    async function handleVideoUpload(input) {
+        const file = input.files[0];
+        if(!file) return;
+        alert("Uploading video to Supabase Storage...");
+        // Logic for supabase.storage.from('videos').upload(...) goes here
     }
 
-    async function handleLogin() {
-        const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
-        const { error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
-        if(error) { // If login fails, try signup
-            await _supabase.auth.signUp({ email: e, password: p });
-            alert("Check email for confirmation!");
-        } else location.reload();
+    function copyLink() {
+        navigator.clipboard.writeText(document.getElementById('my-link').innerText);
+        alert("Link copied! Send it on WhatsApp.");
     }
 
-    async function loadPosts() {
-        const { data: posts } = await _supabase.from('posts').select('*').order('created_at', { ascending: false });
-        const feed = document.getElementById('kasi-feed');
-        feed.innerHTML = posts.map(p => `
-            <div style="background:var(--card); padding:20px; border-radius:20px; margin-bottom
+    async function logout() { await _db.auth.signOut(); location.reload(); }
+</script>
+</body>
+</html>
