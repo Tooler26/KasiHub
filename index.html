@@ -3,51 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KasiHub | The Empire</title>
+    <title>KasiHub | The Empire is Live</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root { --kasi-green: #2ecc71; --gold: #f1c40f; --blue: #3498db; --card: #111; --danger: #e74c3c; }
+        :root { --kasi-green: #2ecc71; --gold: #f1c40f; --blue: #3498db; --card: #111; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: #000; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
         
-        /* Layout */
         #app-shell { display: grid; grid-template-columns: 240px 1fr 350px; height: 100vh; }
         nav { background: #000; border-right: 1px solid #222; padding: 15px; display: flex; flex-direction: column; }
         main { overflow-y: auto; padding: 20px; background: radial-gradient(circle at top, #0a150a, #000); }
         aside { background: #000; border-left: 1px solid #222; padding: 15px; overflow-y: auto; }
 
-        /* UI Elements */
-        .nav-link { padding: 12px; display: flex; align-items: center; color: #777; cursor: pointer; border-radius: 12px; margin-bottom: 5px; transition: 0.3s; }
+        /* Navigation */
+        .nav-link { padding: 12px; display: flex; align-items: center; color: #777; cursor: pointer; border-radius: 12px; margin-bottom: 5px; transition: 0.3s; font-size: 14px; }
         .nav-link.active { background: var(--kasi-green); color: #000; font-weight: 800; }
-        .nav-link i { width: 25px; }
+        .nav-link i { width: 25px; font-size: 18px; }
 
-        .kasi-card { background: var(--card); border-radius: 20px; border: 1px solid #222; margin-bottom: 20px; padding: 15px; }
-        .video-container { width: 100%; border-radius: 15px; overflow: hidden; background: #000; margin-top: 10px; }
-        video { width: 100%; display: block; max-height: 500px; }
+        /* Content Styles */
+        .kasi-card { background: var(--card); border-radius: 20px; border: 1px solid #222; margin-bottom: 20px; padding: 15px; position: relative; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Badges */
-        .badge { font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; }
+        .badge { font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; vertical-align: middle; }
         .badge-blue { background: var(--blue); color: white; }
         .badge-gold { background: var(--gold); color: black; }
 
-        /* Forms */
-        .post-box { background: #111; border: 1px solid var(--kasi-green); padding: 20px; border-radius: 20px; margin-bottom: 25px; }
-        textarea { width: 100%; background: none; border: none; color: white; font-size: 16px; outline: none; resize: none; min-height: 60px; }
-        .btn-p { background: var(--kasi-green); color: #000; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 900; cursor: pointer; }
-        
-        /* Mall Specifics */
-        .mall-disclaimer { background: rgba(241, 196, 15, 0.05); border: 1px dashed var(--gold); padding: 15px; border-radius: 15px; font-size: 12px; margin-bottom: 20px; color: #bbb; }
+        /* Interaction Elements */
+        .post-box { background: #111; border: 1px solid #222; padding: 15px; border-radius: 20px; margin-bottom: 20px; }
+        textarea { width: 100%; background: none; border: none; color: white; font-size: 16px; outline: none; resize: none; min-height: 80px; }
+        .btn-p { background: var(--kasi-green); color: #000; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.2s; }
+        .btn-p:active { transform: scale(0.95); }
 
-        /* Mobile Optimization */
+        /* Mall & Job Specials */
+        .price-tag { color: var(--kasi-green); font-weight: 900; font-size: 18px; }
+        .disclaimer { border: 1px dashed var(--gold); background: rgba(241,196,15,0.05); padding: 15px; border-radius: 15px; font-size: 12px; margin-bottom: 20px; line-height: 1.4; }
+
+        /* Video Styles */
+        video { width: 100%; border-radius: 12px; margin-top: 10px; background: #000; max-height: 450px; }
+
+        /* Mobile */
         @media (max-width: 1000px) { #app-shell { grid-template-columns: 80px 1fr; } aside { display: none; } }
         @media (max-width: 650px) {
             #app-shell { grid-template-columns: 1fr; grid-template-rows: 1fr 70px; }
             nav { grid-row: 2; flex-direction: row !important; padding: 0; }
-            .nav-label { display: none; }
-            .nav-link { flex: 1; flex-direction: column; font-size: 10px; justify-content: center; }
+            .nav-label, .logo-text { display: none; }
+            .nav-link { flex: 1; flex-direction: column; font-size: 9px; border-radius: 0; padding: 10px 0; }
+            .nav-link i { margin: 0 0 5px 0; }
         }
     </style>
 </head>
@@ -55,173 +62,164 @@
 
 <div id="app-shell">
     <nav>
-        <div style="color:var(--kasi-green); font-weight:900; font-size:24px; padding:15px;">KH</div>
-        <div class="nav-link active" onclick="switchTab('discovery', this)"><i class="fa fa-users"></i> <span class="nav-label">Discovery</span></div>
-        <div class="nav-link" onclick="switchTab('mall', this)"><i class="fa fa-shopping-cart"></i> <span class="nav-label">Kasi Mall</span></div>
-        <div class="nav-link" onclick="switchTab('jobs', this)"><i class="fa fa-briefcase"></i> <span class="nav-label">Quick Jobs</span></div>
-        <div class="nav-link" onclick="switchTab('verify', this)"><i class="fa fa-check-circle"></i> <span class="nav-label">Verified</span></div>
+        <div class="logo-text" style="color:var(--kasi-green); font-weight:900; font-size:24px; padding:15px; margin-bottom:20px;">KASIHUB</div>
+        <div class="nav-link active" onclick="showTab('discovery', this)"><i class="fa fa-play-circle"></i> <span class="nav-label">Discovery Hub</span></div>
+        <div class="nav-link" onclick="showTab('mall', this)"><i class="fa fa-shopping-bag"></i> <span class="nav-label">Kasi Mall</span></div>
+        <div class="nav-link" onclick="showTab('jobs', this)"><i class="fa fa-handshake"></i> <span class="nav-label">Quick Jobs</span></div>
+        <div class="nav-link" onclick="showTab('verify', this)"><i class="fa fa-certificate"></i> <span class="nav-label">Verification</span></div>
     </nav>
 
-    <main id="main-content">
-        <section id="tab-discovery" class="tab-content">
-            <h2 style="margin-top:0;">Discovery Hub <small style="font-size:10px; color:var(--danger); border:1px solid; padding:2px 5px; border-radius:4px;">NO SELLING ALLOWED</small></h2>
+    <main>
+        <section id="tab-discovery" class="tab-content active-tab">
+            <h2 style="margin-top:0;">Discovery <small style="color:#444; font-size:12px;">(No Selling Allowed)</small></h2>
             <div class="post-box">
-                <textarea id="story-text" placeholder="Tell the Kasi a story..."></textarea>
+                <textarea id="disc-text" placeholder="Share a story or upload a video..."></textarea>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                    <label style="cursor:pointer; font-size:13px; color:#777;"><i class="fa fa-video"></i> Upload Video <input type="file" id="video-input" hidden accept="video/*"></label>
-                    <button class="btn-p" onclick="postToDiscovery()">POST STORY</button>
+                    <label style="cursor:pointer; color:#777; font-size:14px;"><i class="fa fa-video"></i> Video <input type="file" id="disc-video" hidden accept="video/*"></label>
+                    <button class="btn-p" onclick="postStory()">POST</button>
                 </div>
             </div>
-            <div id="discovery-feed">
-                </div>
+            <div id="feed-discovery"></div>
         </section>
 
-        <section id="tab-mall" class="tab-content" style="display:none;">
-            <div class="mall-disclaimer">
-                <i class="fa fa-shield-alt" style="color:var(--gold)"></i> <b>Logistics Protection:</b> Payment is held by KasiHub. Seller ships to Hub. We verify quality $\rightarrow$ then deliver to you. 5% commission applies to all sales.
+        <section id="tab-mall" class="tab-content">
+            <div class="disclaimer">
+                <i class="fa fa-shield-alt" style="color:var(--gold)"></i> <b>ESCROW DELIVERY SYSTEM:</b><br>
+                1. Buyer pays KasiHub. 2. Seller ships to a KasiHub Point. 3. We verify item quality. 4. We deliver to Buyer. <br>
+                <i>A 5% service fee is deducted to cover logistics.</i>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h2>Kasi Mall</h2>
-                <button class="btn-p" style="background:var(--gold)" onclick="switchTab('verify', null)">Open Shop</button>
+                <button class="btn-p" style="background:var(--gold)" onclick="showTab('verify', null)">Open Your Shop</button>
             </div>
-            <div id="mall-feed">
+            <div id="feed-mall">
                 </div>
         </section>
 
-        <section id="tab-jobs" class="tab-content" style="display:none;">
+        <section id="tab-jobs" class="tab-content">
             <h2>Quick Jobs</h2>
-            <p style="color:#777; font-size:14px;">Post a task, name your budget, and get help now.</p>
-            <div class="post-box" style="border-color:var(--blue)">
-                <textarea id="job-text" placeholder="What help do you need? (e.g. Need help moving furniture)"></textarea>
-                <input type="number" id="job-budget" placeholder="Budget (R)" style="background:none; border:1px solid #333; color:white; padding:8px; border-radius:8px; width:120px; margin-top:10px;">
-                <button class="btn-p" style="background:var(--blue); color:white; margin-top:10px; float:right;" onclick="postJob()">POST JOB</button>
+            <div class="post-box" style="border-color: var(--blue);">
+                <textarea id="job-text" placeholder="What do you need help with?"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <input type="number" id="job-budget" placeholder="Budget (R)" style="background:#222; border:1px solid #333; color:white; padding:10px; border-radius:10px; width:150px;">
+                    <button class="btn-p" style="background:var(--blue); color:white;" onclick="postJob()">POST TASK</button>
+                </div>
             </div>
-            <div id="jobs-feed"></div>
+            <div id="feed-jobs"></div>
         </section>
 
-        <section id="tab-verify" class="tab-content" style="display:none;">
+        <section id="tab-verify" class="tab-content">
             <h2>Empire Verification</h2>
             <div class="kasi-card">
-                <h3><span class="badge badge-blue">Blue Badge</span> Identity Verified</h3>
-                <p>Verify your real name and identity to increase trust in the Discovery Hub.</p>
-                <p><b>Fee: R150 (Once-off)</b></p>
-                <button class="btn-p" style="background:var(--blue); color:white;" onclick="payStack(150, 'Blue Badge')">Verify Now</button>
+                <h3><span class="badge badge-blue">Blue Badge</span> Personal Identity</h3>
+                <p>Get verified to show you are the real owner of your profile.</p>
+                <p><b>R150 (Once-off)</b></p>
+                <button class="btn-p" style="background:var(--blue); color:white;" onclick="processPayment(150, 'Blue Badge')">Get Verified</button>
             </div>
             <div class="kasi-card">
-                <h3><span class="badge badge-gold">Gold Badge</span> Business Seller</h3>
-                <p>Necessary to list items in the Kasi Mall. Includes KasiHub logistics support.</p>
-                <p><b>Fee: R350 (Monthly)</b></p>
-                <button class="btn-p" style="background:var(--gold);" onclick="payStack(350, 'Gold Badge')">Register Business</button>
+                <h3><span class="badge badge-gold">Gold Badge</span> Business License</h3>
+                <p>Required to sell in the Kasi Mall. Includes KasiHub logistics access.</p>
+                <p><b>R350 (Monthly)</b></p>
+                <button class="btn-p" style="background:var(--gold);" onclick="processPayment(350, 'Gold Badge')">Buy Gold Badge</button>
             </div>
         </section>
     </main>
 
     <aside>
         <h4 style="color:#444; letter-spacing:2px; font-size:10px; margin-bottom:20px;">KASI AD NETWORK</h4>
-        <div id="aside-ads">
-            <div class="kasi-card" style="border:1px solid var(--gold)">
-                <div style="height:120px; background:#222; border-radius:12px; margin-bottom:10px;"></div>
-                <div class="badge badge-gold">SPONSORED</div>
-                <h4 style="margin:10px 0 5px 0;">Parys Braai Stand</h4>
-                <p style="font-size:12px; color:#777;">Order your weekend platter now. Free delivery for Gold Users.</p>
-            </div>
+        <div class="kasi-card" style="border-color: var(--gold);">
+            <div style="height:140px; background:url('https://images.unsplash.com/photo-1544025162-d76694265947?w=400'); background-size:cover; border-radius:12px; margin-bottom:10px;"></div>
+            <span class="badge badge-gold">SPONSORED</span>
+            <h4 style="margin:10px 0 5px 0;">Elite Shisanyama</h4>
+            <p style="font-size:12px; color:#777;">Soweto's finest meat. Gold Users get 10% off today!</p>
+            <button class="btn-p" style="width:100%; font-size:12px; padding:8px;">ORDER NOW</button>
         </div>
     </aside>
 </div>
 
 <script>
-    // 1. SUPABASE CONNECTION (REPLACE WITH YOUR KEYS)
-    const S_URL = 'https://YOUR_PROJECT.supabase.co';
+    // --- 1. SETUP SUPABASE ---
+    const S_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
     const S_KEY = 'YOUR_ANON_KEY';
     const _db = supabase.createClient(S_URL, S_KEY);
 
-    // 2. CORE: DISCOVERY LOGIC (NO SELLING)
-    async function postToDiscovery() {
-        const text = document.getElementById('story-text').value;
-        const file = document.getElementById('video-input').files[0];
+    // --- 2. CORE LOGIC ---
+
+    async function postStory() {
+        const text = document.getElementById('disc-text').value;
+        const file = document.getElementById('disc-video').files[0];
         
-        // Strict Check: No selling in Discovery
-        const blocked = ["sell", "price", "cost", "buying", "R", "only"];
-        if(blocked.some(word => text.toLowerCase().includes(word))) {
-            alert("⚠️ SELLING NOT ALLOWED HERE! Please use the Kasi Mall tab to sell items.");
+        // Strict Rule: No selling in Discovery
+        const rules = ["sell", "price", "only R", "cost", "buying"];
+        if(rules.some(r => text.toLowerCase().includes(r))) {
+            alert("⚠️ SELLING IS FOR THE MALL! Please post your item in the Kasi Mall tab.");
             return;
         }
 
         let vUrl = null;
         if(file) {
-            const path = `stories/${Date.now()}_${file.name}`;
-            const { data } = await _db.storage.from('videos').upload(path, file);
-            vUrl = _db.storage.from('videos').getPublicUrl(path).data.publicUrl;
+            const fName = `v_${Date.now()}`;
+            await _db.storage.from('videos').upload(fName, file);
+            vUrl = _db.storage.from('videos').getPublicUrl(fName).data.publicUrl;
         }
 
-        await _db.from('posts').insert([{ content: text, video_url: vUrl, type: 'social', username: 'KasiUser' }]);
-        document.getElementById('story-text').value = "";
-        loadDiscovery();
+        await _db.from('posts').insert([{ content: text, video_url: vUrl, type: 'discovery', username: 'User' }]);
+        document.getElementById('disc-text').value = "";
+        loadFeed('discovery');
     }
 
-    async function loadDiscovery() {
-        const { data } = await _db.from('posts').select('*').eq('type', 'social').order('created_at', { ascending: false });
-        const feed = document.getElementById('discovery-feed');
-        feed.innerHTML = data.map(p => `
-            <div class="kasi-card">
-                <b>${p.username} <span class="badge badge-blue">Verified</span></b>
-                <p>${p.content}</p>
-                ${p.video_url ? `<div class="video-container"><video src="${p.video_url}" controls autoplay muted loop></video></div>` : ''}
-            </div>
-        `).join('');
-    }
-
-    // 3. CORE: QUICK JOBS LOGIC
     async function postJob() {
         const text = document.getElementById('job-text').value;
         const budget = document.getElementById('job-budget').value;
         await _db.from('posts').insert([{ content: text, budget: budget, type: 'job', username: 'Employer' }]);
-        loadJobs();
+        document.getElementById('job-text').value = "";
+        loadFeed('job');
     }
 
-    async function loadJobs() {
-        const { data } = await _db.from('posts').select('*').eq('type', 'job').order('created_at', { ascending: false });
-        document.getElementById('jobs-feed').innerHTML = data.map(j => `
-            <div class="kasi-card" style="border-left: 4px solid var(--blue);">
-                <div style="display:flex; justify-content:space-between;">
-                    <b>${j.username}</b>
-                    <span style="color:var(--kasi-green); font-weight:900;">R${j.budget}</span>
-                </div>
-                <p>${j.content}</p>
-                <button class="btn-p" style="padding:5px 15px; font-size:12px;">Chat to Help</button>
+    async function loadFeed(type) {
+        const { data } = await _db.from('posts').select('*').eq('type', type).order('created_at', { ascending: false });
+        const container = document.getElementById(`feed-${type}`);
+        if(!container) return;
+
+        container.innerHTML = data.map(p => `
+            <div class="kasi-card">
+                <b>${p.username} ${type === 'discovery' ? '<span class="badge badge-blue">ID Verified</span>' : ''}</b>
+                <p>${p.content}</p>
+                ${p.budget ? `<span class="price-tag">Budget: R${p.budget}</span>` : ''}
+                ${p.video_url ? `<video src="${p.video_url}" controls muted loop playsinline></video>` : ''}
             </div>
         `).join('');
     }
 
-    // 4. CORE: PAYMENTS (PAYSTACK)
-    function payStack(amt, type) {
+    // --- 3. PAYMENTS ---
+
+    function processPayment(amt, type) {
         const handler = PaystackPop.setup({
-            key: 'pk_test_YOUR_KEY', // GET FROM PAYSTACK.COM
+            key: 'pk_test_YOUR_KEY', // Change to your Live key when ready
             email: 'user@kasihub.com',
-            amount: amt * 100, // Cents
+            amount: amt * 100,
             currency: 'ZAR',
             callback: function(res) {
-                alert(`SUCCESS: Your ${type} has been activated! Reference: ${res.reference}`);
-                // Here you would update the user's "badge" status in Supabase
+                alert(`${type} Success! Reference: ${res.reference}`);
+                // In a real app, update DB here
             },
-            onClose: function() { alert("Payment Window Closed"); }
+            onClose: function() { alert("Payment Closed."); }
         });
         handler.openIframe();
     }
 
-    // TAB SYSTEM
-    function switchTab(id, el) {
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById('tab-' + id).style.display = 'block';
+    // --- 4. TABS ---
+
+    function showTab(id, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+        document.getElementById('tab-' + id).classList.add('active-tab');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         if(el) el.classList.add('active');
-        
-        if(id === 'discovery') loadDiscovery();
-        if(id === 'jobs') loadJobs();
+        loadFeed(id);
     }
 
-    // Initial Load
-    window.onload = loadDiscovery;
+    // Start Up
+    loadFeed('discovery');
 </script>
 </body>
 </html>
