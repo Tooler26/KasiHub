@@ -3,149 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KasiHub | Empire Ads</title>
+    <title>KasiHub | The Complete Empire</title>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --kasi-green: #2ecc71; --gold: #f1c40f; --card: #111; --bg: #000; }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { margin: 0; background: var(--bg); color: white; overflow: hidden; height: 100vh; }
+        :root { --kasi-green: #2ecc71; --gold: #f1c40f; --blue: #3498db; --card: #111; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: #000; color: white; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
         
         #app-shell { display: grid; grid-template-columns: 240px 1fr 350px; height: 100vh; }
+        nav { background: #000; border-right: 1px solid #222; padding: 15px; display: flex; flex-direction: column; }
         main { overflow-y: auto; padding: 20px; background: radial-gradient(circle at top, #0a150a, #000); }
         aside { background: #000; border-left: 1px solid #222; padding: 15px; overflow-y: auto; }
 
-        /* NAV STYLES */
-        nav { background: #000; border-right: 1px solid #222; padding: 15px; }
-        .nav-link { padding: 12px; display: flex; align-items: center; color: #777; text-decoration: none; border-radius: 12px; cursor: pointer; margin-bottom: 5px; }
+        /* TAB STYLING */
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* NAVIGATION */
+        .nav-link { padding: 12px; display: flex; align-items: center; color: #777; text-decoration: none; border-radius: 12px; cursor: pointer; margin-bottom: 5px; font-size: 14px; transition: 0.3s; }
         .nav-link.active { background: var(--kasi-green); color: #000; font-weight: 800; }
+        .nav-link i { margin-right: 12px; width: 20px; text-align: center; }
 
+        /* CARDS & BADGES */
+        .kasi-card { background: var(--card); border-radius: 20px; border: 1px solid #222; margin-bottom: 20px; padding: 20px; }
+        .badge-gold { background: var(--gold); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; }
+        .badge-blue { background: var(--blue); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; }
+        
+        .btn-p { background: var(--kasi-green); color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%; }
+        
         /* AD STYLING */
-        .kasi-ad { 
-            position: relative;
-            background: linear-gradient(45deg, #111, #222); 
-            border-radius: 20px; 
-            padding: 2px; 
-            margin-bottom: 20px; 
-            overflow: hidden;
-            transition: 0.3s;
-            border: 1px solid #333;
-        }
-        .kasi-ad:hover { transform: scale(1.02); border-color: var(--kasi-green); }
-        
-        .ad-content {
-            background: #000;
-            border-radius: 18px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .ad-badge { 
-            background: var(--kasi-green); 
-            color: #000; 
-            font-size: 10px; 
-            font-weight: 900; 
-            padding: 3px 8px; 
-            border-radius: 5px; 
-            width: fit-content;
-            margin-bottom: 5px;
-        }
-
-        .ad-image-placeholder {
-            width: 100%;
-            height: 150px;
-            border-radius: 12px;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: flex-end;
-            padding: 15px;
-        }
-
-        .ad-title { font-size: 18px; font-weight: 900; color: white; }
-        .ad-desc { font-size: 13px; color: #aaa; line-height: 1.4; }
-        
-        .btn-ad { 
-            background: var(--kasi-green); 
-            color: #000; 
-            border: none; 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-weight: 800; 
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* PREMIUM GOLD AD */
-        .gold-ad { border: 1px solid var(--gold); }
-        .gold-ad .ad-badge { background: var(--gold); }
-        .gold-ad .btn-ad { background: var(--gold); }
+        .ad-box { background: linear-gradient(45deg, #111, #222); border-radius: 15px; padding: 15px; border: 1px solid #333; margin-bottom: 15px; }
 
         @media (max-width: 1000px) { #app-shell { grid-template-columns: 80px 1fr; } aside { display: none; } }
+        @media (max-width: 650px) { #app-shell { grid-template-columns: 1fr; grid-template-rows: 1fr 70px; } nav { grid-row: 2; flex-direction: row !important; padding: 0; } .nav-label { display: none; } .nav-link { flex: 1; flex-direction: column; justify-content: center; font-size: 10px; } }
     </style>
 </head>
 <body>
 
 <div id="app-shell">
     <nav>
-        <div style="color:var(--kasi-green); font-weight:900; padding:15px; font-size:22px;">KH</div>
-        <div class="nav-link active"><i class="fa fa-home"></i> <span class="nav-label">Home</span></div>
-        <div class="nav-link"><i class="fa fa-shopping-bag"></i> <span class="nav-label">Mall</span></div>
+        <div style="color:var(--kasi-green); font-weight:900; padding:15px; font-size:20px;">KH</div>
+        <div class="nav-link active" onclick="showTab('discovery', this)"><i class="fa fa-compass"></i> <span class="nav-label">Discovery</span></div>
+        <div class="nav-link" onclick="showTab('mall', this)"><i class="fa fa-shopping-bag"></i> <span class="nav-label">Kasi Mall</span></div>
+        <div class="nav-link" onclick="showTab('jobs', this)"><i class="fa fa-tools"></i> <span class="nav-label">Quick Jobs</span></div>
+        <div class="nav-link" onclick="showTab('verify', this)"><i class="fa fa-check-circle"></i> <span class="nav-label">Verification</span></div>
     </nav>
 
     <main>
-        <div id="main-ads">
-            <div class="kasi-ad gold-ad">
-                <div class="ad-content">
-                    <div class="ad-badge">SPONSORED | GOLD MERCHANT</div>
-                    <div class="ad-image-placeholder" style="background-image: url('https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');">
-                        <div style="background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px; font-size: 12px;">PARYS HUB</div>
-                    </div>
-                    <div class="ad-title">Ma-G's Shisanyama</div>
-                    <div class="ad-desc">The best vleis in the Vaal. Buy 2 platters and get a 2L Coke FREE! Exclusive to KasiHub users.</div>
-                    <button class="btn-ad">ORDER NOW</button>
+        <div id="tab-discovery" class="tab-content active">
+            <h2 style="margin-top:0;">Discovery Hub</h2>
+            <div style="background:#111; padding:20px; border-radius:20px; margin-bottom:20px; border: 1px solid #222;">
+                <textarea id="post-text" placeholder="Share a story or video..." style="width:100%; background:none; border:none; color:white; outline:none; font-size:16px; resize:none;"></textarea>
+                <div style="display:flex; justify-content:space-between; margin-top:10px; align-items:center;">
+                    <label style="cursor:pointer; color:#555; font-size:13px;"><i class="fa fa-video"></i> Add Video <input type="file" id="video-file" hidden accept="video/*"></label>
+                    <button class="btn-p" style="width:auto; padding:8px 25px;" onclick="uploadPost()">POST STORY</button>
                 </div>
             </div>
-
-            <div class="kasi-ad">
-                <div class="ad-content">
-                    <div class="ad-badge">SPONSORED</div>
-                    <div class="ad-title">Elite Shine Car Wash</div>
-                    <div class="ad-desc">Full valet for only R120. Visit us in Zone 4 Soweto. We use premium wax only!</div>
-                    <button class="btn-ad">VIEW LOCATION</button>
+            <div id="feed-wall">
                 </div>
+        </div>
+
+        <div id="tab-mall" class="tab-content">
+            <div style="background: rgba(241, 196, 15, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 15px; font-size: 12px; margin-bottom: 20px;">
+                <i class="fa fa-shield-alt" style="color:var(--gold)"></i> <b>Safe-Buy Protocol:</b> Sellers ship to KasiHub Hubs first. We verify before delivery. 5% fee applies.
+            </div>
+            <h2>Kasi Mall</h2>
+            <div id="mall-list">
+                <div class="kasi-card">
+                    <b>Ma-G's Tech <span class="badge-gold">GOLD SELLER</span></b>
+                    <p>New Smartphones - Delivery via KasiHub.</p>
+                    <button class="btn-p" onclick="payNow(500, 'Product')">Buy Now (R500)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-jobs" class="tab-content">
+            <h2>Quick Jobs</h2>
+            <div class="kasi-card">
+                <h3>Need Painting Help</h3>
+                <p>Location: Parys, Section 3. <b>Budget: R250</b></p>
+                <button class="btn-p">I Can Help</button>
+            </div>
+        </div>
+
+        <div id="tab-verify" class="tab-content">
+            <h2>Get Verified</h2>
+            <div class="kasi-card">
+                <h3><span class="badge-blue">BLUE BADGE</span> Identity</h3>
+                <p>Prove you are real. <b>R150 Once-off.</b></p>
+                <button class="btn-p" onclick="payNow(150, 'Blue Badge')">Get Blue Badge</button>
+            </div>
+            <div class="kasi-card">
+                <h3><span class="badge-gold">GOLD BADGE</span> Business</h3>
+                <p>Register to sell in the Mall. <b>R350 Monthly.</b></p>
+                <button class="btn-p" style="background:var(--gold)" onclick="payNow(350, 'Gold Badge')">Register Business</button>
             </div>
         </div>
     </main>
 
     <aside>
-        <h4 style="color:#444; letter-spacing:2px; font-size:10px; margin-bottom:20px;">KASI AD NETWORK</h4>
-        
-        <div class="kasi-ad" style="font-size: 12px;">
-            <div class="ad-content" style="padding: 15px;">
-                <div class="ad-badge" style="font-size: 8px;">TECH AD</div>
-                <div class="ad-title" style="font-size: 14px;">Screen Fixers Inc.</div>
-                <p class="ad-desc">Broken iPhone? We fix it in 30 mins. Verified by KasiHub.</p>
-                <button class="btn-ad" style="padding: 5px;">CALL</button>
-            </div>
-        </div>
-
-        <div class="kasi-ad gold-ad" style="font-size: 12px;">
-            <div class="ad-content" style="padding: 15px;">
-                <div class="ad-badge" style="font-size: 8px;">FASHION</div>
-                <div class="ad-title" style="font-size: 14px;">Kasi Drip Official</div>
-                <p class="ad-desc">New December stock just landed. Get the look.</p>
-                <button class="btn-ad" style="padding: 5px;">BROWSE</button>
-            </div>
-        </div>
-
-        <div style="text-align: center; color: #333; font-size: 10px; margin-top: 30px;">
-            Want to see your business here?<br>
-            <a href="#" style="color: var(--gold); text-decoration: none;">Apply for a Gold Badge</a>
+        <h4 style="color:#444; letter-spacing:2px; font-size:10px;">SPONSORED ADS</h4>
+        <div class="ad-box">
+            <div style="height:100px; background:#222; border-radius:10px; margin-bottom:10px;"></div>
+            <b style="font-size:14px;">Joe's Car Wash</b>
+            <p style="font-size:12px; color:#777;">Best shine in Soweto! R80 for a full wash.</p>
         </div>
     </aside>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const S_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co';
+    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
+    const _db = supabase.createClient(S_URL, S_KEY);
+
+    // FEED & VIDEO UPLOAD
+    async function uploadPost() {
+        const txt = document.getElementById('post-text').value, file = document.getElementById('video-file').files[0];
+        let vUrl = null;
+        if(file) {
+            const fName = `v_${Date.now()}`;
+            await _db.storage.from('videos').upload(fName, file);
+            vUrl = _db.storage.from('videos').getPublicUrl(fName).data.publicUrl;
+        }
+        await _db.from('posts').insert([{ content: txt, video_url: vUrl, username: "User", location: "Kasi" }]);
+        document.getElementById('post-text').value = "";
+        loadFeed();
+    }
+
+    async function loadFeed() {
+        const { data: posts } = await _db.from('posts').select('*').order('created_at', { ascending: false });
+        document.getElementById('feed-wall').innerHTML = posts.map(p => `
+            <div class="kasi-card">
+                <b>${p.username}</b> <span class="badge-blue">VERIFIED</span>
+                <p>${p.content}</p>
+                ${p.video_url ? `<video loop muted playsinline autoplay src="${p.video_url}" style="width:100%; border-radius:15px;"></video>` : ''}
+            </div>
+        `).join('');
+    }
+
+    // TAB SYSTEM
+    function showTab(id, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        if(el) el.classList.add('active');
+    }
+
+    // PAYSTACK
+    function payNow(amt, type) {
+        const handler = PaystackPop.setup({
+            key: 'pk_test_YOUR_KEY', 
+            email: 'user@kasi.com',
+            amount: amt * 100,
+            currency: 'ZAR',
+            callback: function(res) { alert(type + " Payment Successful!"); },
+            onClose: function() { alert("Payment Cancelled."); }
+        });
+        handler.openIframe();
+    }
+
+    // INITIAL LOAD
+    loadFeed();
+</script>
 </body>
 </html>
