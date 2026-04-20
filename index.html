@@ -21,7 +21,7 @@
             display: flex; 
         }
 
-        /* 1. SIDEBAR NAVIGATION */
+        /* SIDEBAR */
         nav { 
             width: 260px; 
             height: 100vh; 
@@ -30,6 +30,7 @@
             border-right: 1px solid #222; 
             padding: 20px; 
             overflow-y: auto; 
+            z-index: 100;
         }
 
         .logo { 
@@ -37,7 +38,7 @@
             font-weight: 800; 
             margin-bottom: 30px; 
             text-align: center;
-            letter-spacing: -1px;
+            color: var(--kasi-green);
         }
 
         .nav-link { 
@@ -49,6 +50,7 @@
             border-radius: 8px; 
             margin-bottom: 8px; 
             transition: 0.3s ease; 
+            cursor: pointer;
         }
 
         .nav-link i { margin-right: 15px; width: 20px; text-align: center; }
@@ -67,19 +69,19 @@
             letter-spacing: 2px; 
         }
 
-        /* 2. MAIN CONTENT AREA */
+        /* MAIN CONTENT */
         main { 
             margin-left: 260px; 
-            width: 100%; 
+            width: calc(100% - 260px); 
             padding: 30px; 
         }
 
-        .page-content { display: none; animation: fadeIn 0.5s ease; }
+        .page-content { display: none; animation: fadeIn 0.4s ease; }
         .active-page { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 3. VIDEO & CONTENT GRID */
+        /* GRID SYSTEM */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
@@ -95,7 +97,7 @@
             transition: 0.3s;
         }
 
-        .v-card:hover { transform: scale(1.02); border-color: var(--kasi-green); }
+        .v-card:hover { border-color: var(--kasi-green); }
 
         .thumb { 
             width: 100%; 
@@ -104,6 +106,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #444;
         }
 
         .details { padding: 15px; }
@@ -115,130 +118,103 @@
             color: var(--kasi-green);
         }
 
-        /* Responsive Mobile */
+        button.primary-btn {
+            background: var(--kasi-green);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Mobile */
         @media (max-width: 768px) {
             nav { width: 70px; padding: 10px; }
             nav span, .section-label, .logo span { display: none; }
-            main { margin-left: 70px; }
+            main { margin-left: 70px; width: calc(100% - 70px); }
         }
     </style>
 </head>
-      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-    // 2. Your Connection Details
-    const SUPABASE_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
-
-    // 3. Initialize the Connection
-    const _supabase = supabase.createClient(https://myxbhcherlhpoqmycxdj.supabase.co,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE );
-
-    console.log("KasiHub is now connected to the database!");
-    // This function runs when someone clicks "Create My Account"
-async function signUpUser() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const location = document.getElementById('user-location').value;
-    const errorDisplay = document.getElementById('auth-error');
-
-    // Validation: Make sure they picked a Kasi
-    if (!location) {
-        errorDisplay.innerText = "Please select your Kasi first!";
-        return;
-    }
-
-    // Step 1: Tell Supabase to create a new user
-    const { data, error } = await _supabase.auth.signUp({
-        email: email,
-        password: password,
-    });
-
-    if (error) {
-        errorDisplay.innerText = error.message;
-    } else {
-        // Step 2: If user creation worked, save their location to our 'profiles' table
-        const user = data.user;
-        const { error: profileError } = await _supabase
-            .from('profiles')
-            .insert([{ id: user.id, location: location, username: email.split('@')[0] }]);
-
-        if (profileError) {
-            console.error("Profile Error:", profileError);
-            errorDisplay.innerText = "Account created, but location failed to save.";
-        } else {
-            // Success! Hide the popup
-            alert("Success! Welcome to the KasiHub community.");
-            document.getElementById('auth-modal').style.display = 'none';
-        }
-    }
-}
-</script>      
 <body>
-<div id="auth-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; display:flex; justify-content:center; align-items:center;">
-    <div style="background:#1a1a1a; padding:40px; border-radius:15px; border:2px solid #2ecc71; width:350px; text-align:center; box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);">
-        <h2 style="color:#2ecc71; margin-bottom:10px;">Join KasiHub</h2>
-        <p style="color:#888; font-size:14px; margin-bottom:25px;">Connect with your Kasi pride.</p>
-        
-        <input type="email" id="email" placeholder="Email Address" style="width:100%; padding:12px; margin-bottom:12px; background:#222; border:1px solid #333; color:white; border-radius:8px; outline:none;">
-        <input type="password" id="password" placeholder="Create Password" style="width:100%; padding:12px; margin-bottom:12px; background:#222; border:1px solid #333; color:white; border-radius:8px; outline:none;">
-        
-        <label style="display:block; text-align:left; font-size:12px; color:#2ecc71; margin-bottom:5px; margin-left:5px;">Your Location:</label>
-        <select id="user-location" style="width:100%; padding:12px; margin-bottom:25px; background:#222; border:1px solid #333; color:white; border-radius:8px; outline:none; cursor:pointer;">
-            <option value="">-- Choose Your Kasi --</option>
-            <option value="parys">Parys</option>
-            <option value="de-deur">De Deur</option>
-            <option value="roshnee">Roshnee</option>
-            <option value="vereeniging">Vereeniging</option>
-            <option value="rust-ter-vaal">Rust-ter-Vaal</option>
-        </select>
 
-        <button onclick="signUpUser()" style="width:100%; padding:15px; background:#2ecc71; border:none; color:black; font-weight:bold; border-radius:8px; cursor:pointer; font-size:16px;">Create My Account</button>
-        <p id="auth-error" style="color:#e74c3c; font-size:12px; margin-top:15px;"></p>
-    </div>
-</div>
 <nav>
-    <div class="logo">Kasi<span>Hub</span></div>
+    <div class="logo">KasiHub</div>
     
-    <a href="#" class="nav-link active" onclick="showPage('home')"><i class="fa fa-home"></i> <span>Home</span></a>
-    <a href="#" class="nav-link" onclick="showPage('shorts')"><i class="fa fa-bolt"></i> <span>Shorts</span></a>
+    <div class="nav-link active" onclick="showPage('home')"><i class="fa fa-home"></i> <span>Home</span></div>
     
     <div class="section-label">Active Kasies</div>
     <div id="kasi-tabs">
-        <a href="#" class="nav-link">📍 <span>Parys</span></a>
-        <a href="#" class="nav-link">📍 <span>De Deur</span></a>
-        <a href="#" class="nav-link">📍 <span>Roshnee</span></a>
+        <div class="nav-link">📍 <span>Parys</span></div>
+        <div class="nav-link">📍 <span>De Deur</span></div>
     </div>
 
     <div class="section-label">Explore</div>
-    <a href="#" class="nav-link" onclick="showPage('market')"><i class="fa fa-shopping-basket"></i> <span>Marketplace</span></a>
-    <a href="#" class="nav-link" onclick="showPage('sports')"><i class="fa fa-football"></i> <span>Sports News</span></a>
-    <a href="#" class="nav-link" onclick="showPage('politics')"><i class="fa fa-landmark"></i> <span>Politics</span></a>
-    <a href="#" class="nav-link" onclick="showPage('finance')"><i class="fa fa-chart-line"></i> <span>Finance & Tech</span></a>
+    <div class="nav-link" onclick="showPage('market')"><i class="fa fa-shopping-basket"></i> <span>Marketplace</span></div>
+    <div class="nav-link" onclick="showPage('sports')"><i class="fa fa-football"></i> <span>Sports</span></div>
+    <div class="nav-link" onclick="showPage('politics')"><i class="fa fa-landmark"></i> <span>Politics</span></div>
 </nav>
 
 <main>
     <section id="home" class="page-content active-page">
-        <h1>Trending Near You</h1>
+        <h1>Trending Now</h1>
         <div class="grid">
             <div class="v-card">
-                <div class="thumb"><i class="fa fa-play fa-2x"></i></div>
+                <div class="thumb"><i class="fa fa-play fa-3x"></i></div>
                 <div class="details">
-                    <span class="kasi-badge">Parys</span>
-                    <h4 style="margin:10px 0;">Community Braai Day 2024</h4>
-                    <p style="color:#777; font-size:13px;">1.2M views • 1 day ago</p>
+                    <span class="kasi-badge">Trending</span>
+                    <h4 style="margin:10px 0;">Welcome to KasiHub Platform</h4>
+                    <p style="color:#777; font-size:13px;">Admin • 1 hour ago</p>
                 </div>
             </div>
-            </div>
+        </div>
     </section>
 
     <section id="market" class="page-content">
-        <h1>Kasi Marketplace</h1>
-        <p>Buy and sell locally within your Kasi.</p>
-        <div class="grid" id="market-items">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Kasi Marketplace</h1>
+            <button class="primary-btn">+ Sell Item</button>
+        </div>
+        <div class="grid">
+            <div class="v-card">
+                <div class="thumb" style="background: #222;">ITEM IMAGE</div>
+                <div class="details">
+                    <span class="kasi-badge">Parys</span>
+                    <h4 style="margin:5px 0;">Sample Product</h4>
+                    <p style="color: var(--kasi-green); font-weight: bold;">R 00.00</p>
+                </div>
             </div>
+        </div>
     </section>
 
     <section id="sports" class="page-content">
-        <h1>Local Sports Central</h1>
-        <div style="display:flex; gap:30px; margin-top:20px; filter: grayscale(100%) brightness(200%);">
-         
+        <h1>Local Sports News</h1>
+        <p style="color: #888;">Coming soon: Local league scores.</p>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // 1. YOUR CONNECTION (PUT YOUR DATA HERE)
+    const SUPABASE_URL = 'PASTE_YOUR_API_URL_HERE';
+    const SUPABASE_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
+    
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // 2. PAGE NAVIGATION LOGIC
+    function showPage(pageId) {
+        // Hide all
+        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
+        // Show selected
+        document.getElementById(pageId).classList.add('active-page');
+        // Update sidebar links
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        // We find the link that matches the click
+        event.currentTarget.classList.add('active');
+    }
+
+    console.log("KasiHub System Initialized.");
+</script>
+
+</body>
+</html>
