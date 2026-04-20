@@ -124,7 +124,28 @@
     </style>
 </head>
 <body>
+<div id="auth-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; display:flex; justify-content:center; align-items:center;">
+    <div style="background:#1a1a1a; padding:40px; border-radius:15px; border:2px solid #2ecc71; width:350px; text-align:center; box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);">
+        <h2 style="color:#2ecc71; margin-bottom:10px;">Join KasiHub</h2>
+        <p style="color:#888; font-size:14px; margin-bottom:25px;">Connect with your Kasi pride.</p>
+        
+        <input type="email" id="email" placeholder="Email Address" style="width:100%; padding:12px; margin-bottom:12px; background:#222; border:1px solid #333; color:white; border-radius:8px; outline:none;">
+        <input type="password" id="password" placeholder="Create Password" style="width:100%; padding:12px; margin-bottom:12px; background:#222; border:1px solid #333; color:white; border-radius:8px; outline:none;">
+        
+        <label style="display:block; text-align:left; font-size:12px; color:#2ecc71; margin-bottom:5px; margin-left:5px;">Your Location:</label>
+        <select id="user-location" style="width:100%; padding:12px; margin-bottom:25px; background:#222; border:1px solid #333; color:white; border-radius:8px; outline:none; cursor:pointer;">
+            <option value="">-- Choose Your Kasi --</option>
+            <option value="parys">Parys</option>
+            <option value="de-deur">De Deur</option>
+            <option value="roshnee">Roshnee</option>
+            <option value="vereeniging">Vereeniging</option>
+            <option value="rust-ter-vaal">Rust-ter-Vaal</option>
+        </select>
 
+        <button onclick="signUpUser()" style="width:100%; padding:15px; background:#2ecc71; border:none; color:black; font-weight:bold; border-radius:8px; cursor:pointer; font-size:16px;">Create My Account</button>
+        <p id="auth-error" style="color:#e74c3c; font-size:12px; margin-top:15px;"></p>
+    </div>
+</div>
 <nav>
     <div class="logo">Kasi<span>Hub</span></div>
     
@@ -178,8 +199,46 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
 
     // 3. Initialize the Connection
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const _supabase = supabase.createClient(https://myxbhcherlhpoqmycxdj.supabase.co,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE );
 
     console.log("KasiHub is now connected to the database!");
+    // This function runs when someone clicks "Create My Account"
+async function signUpUser() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const location = document.getElementById('user-location').value;
+    const errorDisplay = document.getElementById('auth-error');
+
+    // Validation: Make sure they picked a Kasi
+    if (!location) {
+        errorDisplay.innerText = "Please select your Kasi first!";
+        return;
+    }
+
+    // Step 1: Tell Supabase to create a new user
+    const { data, error } = await _supabase.auth.signUp({
+        email: email,
+        password: password,
+    });
+
+    if (error) {
+        errorDisplay.innerText = error.message;
+    } else {
+        // Step 2: If user creation worked, save their location to our 'profiles' table
+        const user = data.user;
+        const { error: profileError } = await _supabase
+            .from('profiles')
+            .insert([{ id: user.id, location: location, username: email.split('@')[0] }]);
+
+        if (profileError) {
+            console.error("Profile Error:", profileError);
+            errorDisplay.innerText = "Account created, but location failed to save.";
+        } else {
+            // Success! Hide the popup
+            alert("Success! Welcome to the KasiHub community.");
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+    }
+}
 </script>
         
