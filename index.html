@@ -3,155 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KasiHub | Empire Verified</title>
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <title>KasiHub | Empire Ads</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --kasi-green: #2ecc71; --gold: #f1c40f; --blue: #3498db; --card: #111; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: #000; color: white; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
+        :root { --kasi-green: #2ecc71; --gold: #f1c40f; --card: #111; --bg: #000; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; background: var(--bg); color: white; overflow: hidden; height: 100vh; }
         
         #app-shell { display: grid; grid-template-columns: 240px 1fr 350px; height: 100vh; }
-        nav { background: #000; border-right: 1px solid #222; padding: 15px; display: flex; flex-direction: column; }
         main { overflow-y: auto; padding: 20px; background: radial-gradient(circle at top, #0a150a, #000); }
         aside { background: #000; border-left: 1px solid #222; padding: 15px; overflow-y: auto; }
 
-        .nav-link { padding: 12px; display: flex; align-items: center; color: #777; text-decoration: none; border-radius: 12px; cursor: pointer; margin-bottom: 5px; font-size: 14px; transition: 0.3s; }
+        /* NAV STYLES */
+        nav { background: #000; border-right: 1px solid #222; padding: 15px; }
+        .nav-link { padding: 12px; display: flex; align-items: center; color: #777; text-decoration: none; border-radius: 12px; cursor: pointer; margin-bottom: 5px; }
         .nav-link.active { background: var(--kasi-green); color: #000; font-weight: 800; }
-        
-        .badge-gold { background: var(--gold); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 5px; }
-        .badge-blue { background: var(--blue); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 5px; }
-        
-        .kasi-card { background: var(--card); border-radius: 20px; border: 1px solid #222; margin-bottom: 20px; padding: 20px; transition: 0.3s; }
-        .btn-p { background: var(--kasi-green); color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%; }
-        .btn-gold { background: var(--gold); }
-        .btn-blue { background: var(--blue); color: white; }
 
-        .disclaimer-box { background: rgba(241, 196, 15, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 15px; font-size: 12px; line-height: 1.4; margin-bottom: 20px; color: #ccc; }
+        /* AD STYLING */
+        .kasi-ad { 
+            position: relative;
+            background: linear-gradient(45deg, #111, #222); 
+            border-radius: 20px; 
+            padding: 2px; 
+            margin-bottom: 20px; 
+            overflow: hidden;
+            transition: 0.3s;
+            border: 1px solid #333;
+        }
+        .kasi-ad:hover { transform: scale(1.02); border-color: var(--kasi-green); }
         
+        .ad-content {
+            background: #000;
+            border-radius: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ad-badge { 
+            background: var(--kasi-green); 
+            color: #000; 
+            font-size: 10px; 
+            font-weight: 900; 
+            padding: 3px 8px; 
+            border-radius: 5px; 
+            width: fit-content;
+            margin-bottom: 5px;
+        }
+
+        .ad-image-placeholder {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            padding: 15px;
+        }
+
+        .ad-title { font-size: 18px; font-weight: 900; color: white; }
+        .ad-desc { font-size: 13px; color: #aaa; line-height: 1.4; }
+        
+        .btn-ad { 
+            background: var(--kasi-green); 
+            color: #000; 
+            border: none; 
+            padding: 10px; 
+            border-radius: 8px; 
+            font-weight: 800; 
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* PREMIUM GOLD AD */
+        .gold-ad { border: 1px solid var(--gold); }
+        .gold-ad .ad-badge { background: var(--gold); }
+        .gold-ad .btn-ad { background: var(--gold); }
+
         @media (max-width: 1000px) { #app-shell { grid-template-columns: 80px 1fr; } aside { display: none; } }
-        @media (max-width: 650px) { #app-shell { grid-template-columns: 1fr; grid-template-rows: 1fr 70px; } nav { grid-row: 2; flex-direction: row !important; padding: 0; } .nav-label { display: none; } .nav-link { flex: 1; flex-direction: column; justify-content: center; font-size: 10px; } }
     </style>
 </head>
 <body>
 
 <div id="app-shell">
     <nav>
-        <div style="color:var(--kasi-green); font-weight:900; padding:15px; font-size:20px;">KH</div>
-        <div class="nav-link active" onclick="showTab('discovery', this)"><i class="fa fa-compass"></i> <span class="nav-label">Discovery Hub</span></div>
-        <div class="nav-link" onclick="showTab('mall', this)"><i class="fa fa-shopping-cart"></i> <span class="nav-label">Kasi Mall</span></div>
-        <div class="nav-link" onclick="showTab('jobs', this)"><i class="fa fa-tools"></i> <span class="nav-label">Quick Jobs</span></div>
-        <div class="nav-link" onclick="showTab('verify', this)"><i class="fa fa-check-circle"></i> <span class="nav-label">Get Verified</span></div>
+        <div style="color:var(--kasi-green); font-weight:900; padding:15px; font-size:22px;">KH</div>
+        <div class="nav-link active"><i class="fa fa-home"></i> <span class="nav-label">Home</span></div>
+        <div class="nav-link"><i class="fa fa-shopping-bag"></i> <span class="nav-label">Mall</span></div>
     </nav>
 
     <main>
-        <div id="tab-discovery" class="tab-content">
-            <div style="background:#f31d1d22; border:1px solid #f31d1d; padding:10px; border-radius:10px; margin-bottom:15px; font-size:11px; text-align:center;">
-                <i class="fa fa-exclamation-triangle"></i> <b>STRICT NO-SELLING RULE:</b> Discovery is for social updates only. Use the Mall to sell.
-            </div>
-            <div id="social-feed">
-                <div class="kasi-card">
-                    <b>Thabo_Soweto <span class="badge-blue">VERIFIED</span></b>
-                    <p>Just watched the sunset at Orlando Towers. Kasi is beautiful! 🇿🇦</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-mall" class="tab-content" style="display:none;">
-            <div class="disclaimer-box">
-                <i class="fa fa-shield-alt" style="color:var(--gold)"></i> <b>KasiHub Safe-Buy Policy:</b><br>
-                Sellers ship products to KasiHub Hubs first. We verify the item, then deliver to the client. Payment is held in escrow until delivery. <b>5% Transaction Fee applies.</b>
-            </div>
-            
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h2>Kasi Mall</h2>
-                <button class="btn-p btn-gold" style="width:auto; padding:5px 15px;" onclick="showTab('verify', null)">Apply for Gold Badge</button>
-            </div>
-
-            <div id="mall-feed">
-                <div class="kasi-card">
-                    <div style="display:flex; justify-content:space-between;">
-                        <b>Parys Tech Solutions <span class="badge-gold">GOLD SELLER</span></b>
-                        <span style="color:var(--kasi-green)">R1,200</span>
+        <div id="main-ads">
+            <div class="kasi-ad gold-ad">
+                <div class="ad-content">
+                    <div class="ad-badge">SPONSORED | GOLD MERCHANT</div>
+                    <div class="ad-image-placeholder" style="background-image: url('https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');">
+                        <div style="background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px; font-size: 12px;">PARYS HUB</div>
                     </div>
-                    <p>Refurbished Laptops - Delivery via KasiHub Logistics.</p>
-                    <button class="btn-p" onclick="payNow(1200, 'Product Purchase')">Buy via Paystack</button>
+                    <div class="ad-title">Ma-G's Shisanyama</div>
+                    <div class="ad-desc">The best vleis in the Vaal. Buy 2 platters and get a 2L Coke FREE! Exclusive to KasiHub users.</div>
+                    <button class="btn-ad">ORDER NOW</button>
                 </div>
             </div>
-        </div>
 
-        <div id="tab-verify" class="tab-content" style="display:none;">
-            <h2>Empire Verification</h2>
-            <div class="kasi-card">
-                <h3><i class="fa fa-check-circle" style="color:var(--blue)"></i> Identity Verification (Blue Badge)</h3>
-                <p>Show the Kasi you are real. Increases trust by 90%.</p>
-                <p><b>Price: R150 (Once-off)</b></p>
-                <button class="btn-p btn-blue" onclick="payNow(150, 'Blue Badge Verification')">Verify Identity</button>
-            </div>
-
-            <div class="kasi-card">
-                <h3><i class="fa fa-star" style="color:var(--gold)"></i> Business Gold Badge</h3>
-                <p>Necessary for all sellers. Includes safe-delivery protection and 5% fee cap.</p>
-                <p><b>Price: R350 (Monthly)</b></p>
-                <button class="btn-p btn-gold" onclick="payNow(350, 'Gold Business Badge')">Register Business</button>
+            <div class="kasi-ad">
+                <div class="ad-content">
+                    <div class="ad-badge">SPONSORED</div>
+                    <div class="ad-title">Elite Shine Car Wash</div>
+                    <div class="ad-desc">Full valet for only R120. Visit us in Zone 4 Soweto. We use premium wax only!</div>
+                    <button class="btn-ad">VIEW LOCATION</button>
+                </div>
             </div>
         </div>
     </main>
 
     <aside>
-        <h4 style="color:#444; letter-spacing:2px; font-size:10px;">EMPIRE TELEVISION</h4>
-        <div id="tv-list"></div>
+        <h4 style="color:#444; letter-spacing:2px; font-size:10px; margin-bottom:20px;">KASI AD NETWORK</h4>
+        
+        <div class="kasi-ad" style="font-size: 12px;">
+            <div class="ad-content" style="padding: 15px;">
+                <div class="ad-badge" style="font-size: 8px;">TECH AD</div>
+                <div class="ad-title" style="font-size: 14px;">Screen Fixers Inc.</div>
+                <p class="ad-desc">Broken iPhone? We fix it in 30 mins. Verified by KasiHub.</p>
+                <button class="btn-ad" style="padding: 5px;">CALL</button>
+            </div>
+        </div>
+
+        <div class="kasi-ad gold-ad" style="font-size: 12px;">
+            <div class="ad-content" style="padding: 15px;">
+                <div class="ad-badge" style="font-size: 8px;">FASHION</div>
+                <div class="ad-title" style="font-size: 14px;">Kasi Drip Official</div>
+                <p class="ad-desc">New December stock just landed. Get the look.</p>
+                <button class="btn-ad" style="padding: 5px;">BROWSE</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; color: #333; font-size: 10px; margin-top: 30px;">
+            Want to see your business here?<br>
+            <a href="#" style="color: var(--gold); text-decoration: none;">Apply for a Gold Badge</a>
+        </div>
     </aside>
 </div>
 
-<script>
-    // PAYSTACK LOGIC
-    function payNow(amount, type) {
-        const email = "user@example.com"; // Replace with real user email from your DB
-        const handler = PaystackPop.setup({
-            key: 'pk_test_YOUR_PAYSTACK_PUBLIC_KEY', // Replace with your actual Paystack Key
-            email: email,
-            amount: amount * 100, // Paystack counts in Cents
-            currency: "ZAR",
-            metadata: {
-                custom_fields: [{ display_name: "Type", variable_name: "type", value: type }]
-            },
-            callback: function(response){
-                // ON SUCCESS
-                alert("Payment Approved! Reference: " + response.reference);
-                sendEmailFeedback(email, "Success", type);
-                // Update User Badge in Supabase here
-            },
-            onClose: function(){
-                alert("Payment Declined or Cancelled.");
-            }
-        });
-        handler.openIframe();
-    }
-
-    // AUTOMATED FEEDBACK (SIMULATION)
-    function sendEmailFeedback(email, status, type) {
-        console.log(`Email sent to ${email}: Your payment for ${type} was ${status}.`);
-        // In a real server, you would trigger a SendGrid or Mailchimp API here.
-    }
-
-    function showTab(tabId, el) {
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById('tab-' + tabId).style.display = 'block';
-        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-        if(el) el.classList.add('active');
-    }
-
-    // DISCOVERY HUB STRIKT RULE LOGIC
-    function checkPost(content) {
-        const keywords = ["sell", "price", "R", "cost", "buying"];
-        const found = keywords.some(word => content.toLowerCase().includes(word));
-        if(found) {
-            alert("Warning: No selling allowed in Discovery Hub! Post moved to Mall.");
-            return false;
-        }
-        return true;
-    }
-</script>
 </body>
 </html>
