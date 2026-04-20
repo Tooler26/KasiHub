@@ -3,67 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KasiHub | The Community Wall</title>
+    <title>KasiHub | Connect Your Kasi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --kasi-green: #2ecc71; --kasi-dark: #050505; --card: #121212; --blue-badge: #3ea6ff; --gold-badge: #f1c40f; }
-        
         body, html { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background: #000; color: white; font-family: 'Roboto', sans-serif; }
-        
-        /* 1. INTRO ANIMATION */
-        #site-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
-        .loading-logo { display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; color: white; margin-bottom: 25px; letter-spacing: 2px; }
-        .logo-icon { width: 45px; height: 45px; border-radius: 12px; border: 4px solid var(--kasi-green); display: flex; align-items: center; justify-content: center; margin-right: 15px; color: var(--kasi-green); position: relative; }
-        .logo-icon::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 8px; background: rgba(46, 204, 113, 0.2); animation: logo-glow 2s infinite; }
-        @keyframes logo-glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; transform: scale(1.1); } }
-        .loading-bar-container { width: 200px; background: #1a1a1a; height: 4px; border-radius: 2px; overflow: hidden; }
-        .loading-bar-fill { height: 100%; background: var(--kasi-green); width: 0%; transition: 0.1s linear; box-shadow: 0 0 10px var(--kasi-green); }
 
-        /* 2. MAIN LAYOUT */
-        #main-site { display: none; width: 100%; height: 100vh; display: flex; opacity: 0; transition: opacity 0.8s; }
+        /* INTRO LOADER */
+        #site-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; transition: 0.8s; }
+        .loading-logo { display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; color: white; margin-bottom: 25px; letter-spacing: 2px; }
+        .logo-icon { width: 45px; height: 45px; border-radius: 12px; border: 4px solid var(--kasi-green); display: flex; align-items: center; justify-content: center; margin-right: 15px; color: var(--kasi-green); }
+        .loading-bar-container { width: 200px; background: #1a1a1a; height: 4px; border-radius: 2px; overflow: hidden; }
+        .loading-bar-fill { height: 100%; background: var(--kasi-green); width: 0%; transition: 0.1s linear; }
+
+        /* AUTH MODAL */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(10px); }
+        .auth-card { background: #111; padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; border: 1px solid #222; text-align: center; }
+        .auth-input { width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 10px; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        .badge-select { display: flex; gap: 10px; margin-bottom: 20px; }
+        .badge-opt { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #333; font-size: 11px; cursor: pointer; transition: 0.3s; }
+        .badge-opt.selected { border-color: var(--kasi-green); background: rgba(46, 204, 113, 0.1); }
+
+        /* MAIN SITE UI */
+        #main-site { display: none; width: 100%; height: 100vh; display: flex; opacity: 0; transition: 1s; }
         #main-site.loaded { display: flex !important; opacity: 1; }
 
         nav { width: 240px; background: #000; border-right: 1px solid #1a1a1a; padding: 15px; display: flex; flex-direction: column; }
-        .nav-link { padding: 12px; display: flex; align-items: center; color: #f1f1f1; text-decoration: none; border-radius: 10px; margin-bottom: 5px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .nav-link { padding: 12px; display: flex; align-items: center; color: #f1f1f1; text-decoration: none; border-radius: 10px; margin-bottom: 5px; cursor: pointer; }
         .nav-link i { margin-right: 15px; width: 20px; text-align: center; font-size: 18px; }
-        .nav-link:hover, .nav-link.active { background: #1a1a1a; color: var(--kasi-green); }
+        .nav-link.active { background: #1a1a1a; color: var(--kasi-green); border-left: 3px solid var(--kasi-green); }
 
         main { flex-grow: 1; overflow-y: auto; padding: 20px 40px; background: #080808; }
         .page-content { display: none; max-width: 800px; margin: 0 auto; }
-        .active-page { display: block !important; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .active-page { display: block !important; }
 
-        /* 3. KASI WALL STYLES */
-        .post-creator { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 30px; }
-        .post-input { width: 100%; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; margin-bottom: 15px; }
-        .post-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #222; padding-top: 15px; }
-        .action-icon { color: #888; cursor: pointer; font-size: 18px; transition: 0.2s; }
-        .action-icon:hover { color: var(--kasi-green); }
-
-        .wall-post { background: var(--card); border-radius: 15px; border: 1px solid #222; padding: 20px; margin-bottom: 20px; }
-        .post-user { display: flex; align-items: center; margin-bottom: 15px; }
-        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: #333; margin-right: 12px; border: 2px solid #222; }
-        .user-info b { font-size: 15px; display: flex; align-items: center; }
-        .post-content { line-height: 1.6; color: #ddd; margin-bottom: 15px; }
-        .post-image { width: 100%; border-radius: 12px; margin-bottom: 15px; max-height: 400px; object-fit: cover; }
-        
-        .interaction-row { display: flex; gap: 25px; border-top: 1px solid #222; padding-top: 15px; }
-        .int-btn { cursor: pointer; color: #888; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .int-btn:hover { color: var(--kasi-green); }
-
-        .panic-btn { background: #e74c3c; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; margin-top: auto; cursor: pointer; }
-        .primary-btn { background: var(--kasi-green); color: #000; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        .primary-btn { background: var(--kasi-green); color: #000; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
+        .primary-btn:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(46, 204, 113, 0.4); }
     </style>
 </head>
 <body>
 
 <div id="site-loader">
-    <div class="loading-logo">
-        <div class="logo-icon">K</div>
-        <div class="logo-text">KASI<span>HUB</span></div>
+    <div class="loading-logo"><div class="logo-icon">K</div>KASI<span>HUB</span></div>
+    <div class="loading-bar-container"><div class="loading-bar-fill" id="load-progress"></div></div>
+</div>
+
+<div id="auth-overlay">
+    <div class="auth-card" id="signup-box">
+        <h2 style="margin-top:0;">Join KasiHub 🚀</h2>
+        <p style="color: #666; font-size: 14px; margin-bottom: 25px;">Connect with Parys neighbors.</p>
+        
+        <input type="text" id="reg-user" class="auth-input" placeholder="Full Name (e.g. Sipho Zulu)">
+        <input type="email" id="reg-email" class="auth-input" placeholder="Email Address">
+        <input type="password" id="reg-pass" class="auth-input" placeholder="Create Password">
+        <input type="text" id="reg-kasi" class="auth-input" placeholder="Location (e.g. Parys Section A)">
+        
+        <label style="display:block; text-align:left; font-size:12px; color:#888; margin-bottom:10px;">Select Badge:</label>
+        <div class="badge-select">
+            <div class="badge-opt selected" onclick="pickBadge('standard', this)">Citizen</div>
+            <div class="badge-opt" onclick="pickBadge('blue', this)" style="color:var(--blue-badge)">Leader</div>
+            <div class="badge-opt" onclick="pickBadge('gold', this)" style="color:var(--gold-badge)">Business</div>
+        </div>
+
+        <button class="primary-btn" onclick="handleSignUp()">Create Account</button>
+        <p style="font-size: 12px; color: #555; margin-top: 20px;">Already have an account? <span style="color:var(--kasi-green); cursor:pointer;" onclick="toggleAuth()">Login</span></p>
     </div>
-    <div class="loading-bar-container">
-        <div class="loading-bar-fill" id="load-progress"></div>
+
+    <div class="auth-card" id="login-box" style="display:none;">
+        <h2 style="margin-top:0;">Welcome Back</h2>
+        <input type="email" id="login-email" class="auth-input" placeholder="Email Address">
+        <input type="password" id="login-pass" class="auth-input" placeholder="Password">
+        <button class="primary-btn" onclick="handleLogin()">Login</button>
+        <p style="font-size: 12px; color: #555; margin-top: 20px;">Don't have an account? <span style="color:var(--kasi-green); cursor:pointer;" onclick="toggleAuth()">Sign Up</span></p>
     </div>
 </div>
 
@@ -73,72 +84,25 @@
         <div class="nav-link active" onclick="showPage('wall', this)"><i class="fa fa-users"></i> Kasi Wall</div>
         <div class="nav-link" onclick="showPage('studio', this)"><i class="fa fa-play-circle"></i> Kasi Studio</div>
         <div class="nav-link" onclick="showPage('mall', this)"><i class="fa fa-store"></i> Kasi Mall</div>
-        <div class="nav-link" onclick="showPage('gigs', this)"><i class="fa fa-briefcase"></i> Quick Gigs</div>
         <div class="nav-link" onclick="showPage('profile', this)"><i class="fa fa-user-circle"></i> My Profile</div>
-        
-        <button class="panic-btn" onclick="alert('🚨 Emergency signal ready...')">EMERGENCY</button>
+        <button style="margin-top:auto; background:#e74c3c; border:none; padding:12px; border-radius:10px; color:white; font-weight:bold; cursor:pointer;">EMERGENCY</button>
     </nav>
 
     <main>
         <section id="wall" class="page-content active-page">
-            <h1 style="margin-bottom: 5px;">Kasi Wall</h1>
-            <p style="color: #666; margin-bottom: 25px;">See what's happening in Parys right now.</p>
-
-            <div class="post-creator">
-                <textarea class="post-input" placeholder="What's happening in your Kasi?" rows="2"></textarea>
-                <div class="post-actions">
-                    <div style="display: flex; gap: 20px;">
-                        <i class="fa fa-image action-icon" title="Add Photo"></i>
-                        <i class="fa fa-video action-icon" title="Add Video"></i>
-                        <i class="fa fa-map-marker-alt action-icon" title="Tag Location"></i>
-                    </div>
-                    <button class="primary-btn" onclick="addNewPost()">Post</button>
-                </div>
-            </div>
-
+            <h1>Community Wall</h1>
             <div id="kasi-feed">
-                <div class="wall-post">
-                    <div class="post-user">
-                        <div class="user-avatar" style="background: #2ecc71;"></div>
-                        <div class="user-info">
-                            <b>Dj Vaal Mix <i class="fa fa-check-circle" style="color:#3ea6ff; margin-left:5px;"></i></b>
-                            <span style="font-size: 11px; color: #555;">2 hours ago • Parys Section A</span>
-                        </div>
-                    </div>
-                    <div class="post-content">
-                        Just arrived at the taxi rank! The vibe is 100. Catch me live on the Radio tab at 19:00 tonight! 🔥🇿🇦
-                    </div>
-                    <div class="interaction-row">
-                        <div class="int-btn"><i class="fa fa-thumbs-up"></i> 1.2k</div>
-                        <div class="int-btn"><i class="fa fa-comment"></i> 45</div>
-                        <div class="int-btn"><i class="fa fa-share"></i> Share</div>
-                    </div>
-                </div>
-
-                <div class="wall-post">
-                    <div class="post-user">
-                        <div class="user-avatar" style="background: #f1c40f;"></div>
-                        <div class="user-info">
-                            <b>Mama's Kitchen <i class="fa fa-certificate" style="color:#f1c40f; margin-left:5px;"></i></b>
-                            <span style="font-size: 11px; color: #555;">5 hours ago • Near Library</span>
-                        </div>
-                    </div>
-                    <div class="post-content">
-                        Lunch Special: Kota + CoolDrink for R45 only! Come hungry neighbors. 🍔
-                    </div>
-                    <div class="interaction-row">
-                        <div class="int-btn"><i class="fa fa-thumbs-up"></i> 856</div>
-                        <div class="int-btn"><i class="fa fa-comment"></i> 12</div>
-                        <div class="int-btn"><i class="fa fa-share"></i> Share</div>
-                    </div>
+                <div style="background:var(--card); padding:20px; border-radius:15px; border:1px solid #222;">
+                    Welcome to the wall! Once you sign up, you can post here.
                 </div>
             </div>
         </section>
-
-        <section id="studio" class="page-content"><h1>Kasi Studio</h1><p>Upload your videos here.</p></section>
-        <section id="mall" class="page-content"><h1>Kasi Mall</h1><p>Local shops marketplace.</p></section>
-        <section id="gigs" class="page-content"><h1>Quick Gigs</h1><p>Find work nearby.</p></section>
-        <section id="profile" class="page-content"><h1>My Profile</h1></section>
+        <section id="profile" class="page-content">
+            <h1 id="user-welcome">My Profile</h1>
+            <button class="primary-btn" onclick="logout()" style="width:auto; background:#333; color:white;">Logout</button>
+        </section>
+        <section id="studio" class="page-content"><h1>Kasi Studio</h1></section>
+        <section id="mall" class="page-content"><h1>Kasi Mall</h1></section>
     </main>
 </div>
 
@@ -152,7 +116,9 @@
     
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 2. INTRO LOADER
+    let selectedBadge = 'standard';
+
+    // 2. LOADER ENGINE
     window.onload = function() {
         let progressBar = document.getElementById('load-progress');
         let width = 0;
@@ -160,45 +126,80 @@
             if (width >= 100) {
                 clearInterval(id);
                 document.getElementById('site-loader').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('site-loader').style.display = 'none';
-                    document.getElementById('main-site').classList.add('loaded');
-                }, 500);
+                setTimeout(checkUser, 600); // Check if user is logged in
             } else {
                 width++;
                 progressBar.style.width = width + '%';
             }
-        }, 15);
+        }, 10);
     }
 
-    // 3. WALL POST LOGIC
-    function addNewPost() {
-        const input = document.querySelector('.post-input');
-        if(!input.value) return alert("Write something first!");
-        
-        const feed = document.getElementById('kasi-feed');
-        const newPost = document.createElement('div');
-        newPost.className = 'wall-post';
-        newPost.innerHTML = `
-            <div class="post-user">
-                <div class="user-avatar" style="background: #555;"></div>
-                <div class="user-info">
-                    <b>You (Kasi Legend)</b>
-                    <span style="font-size: 11px; color: #555;">Just now • Parys</span>
-                </div>
-            </div>
-            <div class="post-content">${input.value}</div>
-            <div class="interaction-row">
-                <div class="int-btn"><i class="fa fa-thumbs-up"></i> 0</div>
-                <div class="int-btn"><i class="fa fa-comment"></i> 0</div>
-                <div class="int-btn"><i class="fa fa-share"></i> Share</div>
-            </div>
-        `;
-        feed.prepend(newPost);
-        input.value = "";
+    // 3. AUTH LOGIC
+    async function checkUser() {
+        document.getElementById('site-loader').style.display = 'none';
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            enterSite(user);
+        } else {
+            document.getElementById('auth-overlay').style.display = 'flex';
+        }
     }
 
-    // 4. NAVIGATION
+    function pickBadge(type, el) {
+        selectedBadge = type;
+        document.querySelectorAll('.badge-opt').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function toggleAuth() {
+        const s = document.getElementById('signup-box');
+        const l = document.getElementById('login-box');
+        s.style.display = s.style.display === 'none' ? 'block' : 'none';
+        l.style.display = l.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function handleSignUp() {
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-pass').value;
+        const name = document.getElementById('reg-user').value;
+        const kasi = document.getElementById('reg-kasi').value;
+
+        const { data, error } = await _supabase.auth.signUp({
+            email: email,
+            password: pass,
+            options: { data: { full_name: name, location: kasi, badge: selectedBadge } }
+        });
+
+        if (error) alert(error.message);
+        else {
+            alert("Success! Account created. Check your email for the confirmation link!");
+            // Automatically add to profiles table
+            await _supabase.from('profiles').insert([
+                { id: data.user.id, username: name, kasi_location: kasi, badge_type: selectedBadge }
+            ]);
+            location.reload();
+        }
+    }
+
+    async function handleLogin() {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
+        if (error) alert(error.message);
+        else location.reload();
+    }
+
+    function enterSite(user) {
+        document.getElementById('auth-overlay').style.display = 'none';
+        document.getElementById('main-site').classList.add('loaded');
+        document.getElementById('user-welcome').innerText = "Welcome, " + user.user_metadata.full_name;
+    }
+
+    async function logout() {
+        await _supabase.auth.signOut();
+        location.reload();
+    }
+
     function showPage(pageId, element) {
         document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
         document.getElementById(pageId).classList.add('active-page');
