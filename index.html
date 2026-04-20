@@ -170,3 +170,16 @@
     <section id="sports" class="page-content">
         <h1>Local Sports Central</h1>
         <div style="display:flex; gap:30px; margin-top:20px; filter: grayscale(100%) brightness(200%);">
+            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    // 2. Your Connection Details
+    const SUPABASE_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
+
+    // 3. Initialize the Connection
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    console.log("KasiHub is now connected to the database!");
+</script>
+        
