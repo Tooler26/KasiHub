@@ -1,209 +1,191 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KasiHub | The Empire</title>
+    <title>KasiHub | Live Empire</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --kasi-green: #2ecc71; --card: rgba(20,20,20,0.9); --glass: rgba(255,255,255,0.05); }
-        
+        :root { --kasi-green: #2ecc71; --card: #0f0f0f; --bg: #000; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            margin: 0; background: #000; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden;
-            background: radial-gradient(circle at top right, #0a1a0a, #000);
-        }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        
+        #app-shell { display: grid; grid-template-columns: 240px 1fr 380px; height: 100vh; }
+        
+        /* NAVIGATION */
+        nav { background: #000; display: flex; flex-direction: column; padding: 20px; border-right: 1px solid #111; z-index: 100; }
+        .nav-link { padding: 12px; display: flex; align-items: center; color: #777; text-decoration: none; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 5px; }
+        .nav-link.active { background: var(--kasi-green); color: #000; font-weight: 800; }
+        .nav-link i { margin-right: 15px; width: 20px; text-align: center; }
 
-        /* RESPONSIVE GRID SYSTEM */
-        #app-shell { 
-            display: grid; 
-            grid-template-columns: 260px 1fr 380px; 
-            height: 100vh; 
-            transition: 0.5s ease-in-out;
-        }
+        /* MAIN FEED */
+        main { overflow-y: auto; padding: 25px; background: radial-gradient(circle at top, #0a150a, #000); scroll-behavior: smooth; }
+        .post-card { background: var(--card); padding: 15px; border-radius: 20px; border: 1px solid #222; margin-bottom: 20px; }
+        .media-preview { width: 100%; border-radius: 15px; margin-top: 10px; background: #000; }
 
-        /* TABLET VIEW */
-        @media (max-width: 1100px) { #app-shell { grid-template-columns: 80px 1fr; } aside { display: none; } }
+        /* LIVE ASIDE (The TV Hub) */
+        aside { background: #000; border-left: 1px solid #111; padding: 15px; overflow-y: auto; }
+        .channel-section { margin-bottom: 30px; }
+        .section-title { font-size: 10px; color: #444; letter-spacing: 2px; font-weight: 900; margin-bottom: 15px; border-bottom: 1px solid #111; padding-bottom: 5px; }
+        .channel-card { background: #111; border-radius: 15px; overflow: hidden; border: 1px solid #222; margin-bottom: 12px; position: relative; }
+        .channel-label { padding: 8px 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px; background: #161616; }
+        .live-dot { height: 6px; width: 6px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+        
+        @keyframes blink { 50% { opacity: 0; } }
 
-        /* MOBILE VIEW */
+        /* AUTH & BUTTONS */
+        .btn-p { background: var(--kasi-green); color: #000; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; }
+        #auth-gate { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .auth-box { background: #111; width: 90%; max-width: 400px; padding: 40px; border-radius: 30px; border: 1px solid #222; text-align: center; }
+        input { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 15px; margin-bottom: 10px; outline: none; }
+
+        /* MOBILE FIXES */
+        @media (max-width: 900px) { #app-shell { grid-template-columns: 80px 1fr; } aside { display: none; } }
         @media (max-width: 650px) {
             #app-shell { grid-template-columns: 1fr; grid-template-rows: 1fr 75px; }
-            nav { grid-row: 2; flex-direction: row !important; width: 100% !important; border-top: 1px solid #222; padding: 0 10px !important; }
-            nav .logo, .nav-label, aside, .panic-btn { display: none; }
-            .nav-link { flex-direction: column; font-size: 10px; flex: 1; justify-content: center; }
-            .nav-link i { margin: 0 0 5px 0 !important; font-size: 20px; }
-            main { padding: 15px !important; }
+            nav { grid-row: 2; flex-direction: row !important; width: 100% !important; padding: 0 !important; }
+            .nav-label, .logo { display: none; }
+            .nav-link { flex: 1; flex-direction: column; font-size: 10px; border-radius: 0; }
         }
-
-        /* COMPONENTS */
-        nav { background: #000; display: flex; flex-direction: column; padding: 25px; border-right: 1px solid #111; z-index: 10; }
-        main { overflow-y: auto; padding: 30px; scroll-behavior: smooth; }
-        aside { background: #000; border-left: 1px solid #111; padding: 20px; overflow-y: auto; }
-
-        .nav-link { padding: 15px; display: flex; align-items: center; color: #777; text-decoration: none; border-radius: 12px; margin-bottom: 5px; cursor: pointer; transition: 0.3s; }
-        .nav-link.active { background: var(--kasi-green); color: #000; font-weight: 800; }
-        .nav-link i { margin-right: 15px; font-size: 18px; }
-
-        .post-card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--glass); margin-bottom: 20px; animation: slideUp 0.5s ease forwards; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* VIDEO & AI STYLES */
-        video { width: 100%; border-radius: 15px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .ai-fab { position: fixed; bottom: 100px; right: 25px; width: 60px; height: 60px; background: #8e44ad; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 20px rgba(142,68,173,0.4); z-index: 999; border: 2px solid #a29bfe; }
-
-        /* AUTH MODAL */
-        #auth-gate { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-box { background: #111; width: 100%; max-width: 400px; padding: 40px; border-radius: 30px; border: 1px solid #222; text-align: center; }
-        input { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 15px; margin-bottom: 15px; outline: none; }
-        .btn-p { background: var(--kasi-green); color: #000; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; }
-        .btn-p:active { transform: scale(0.96); }
     </style>
 </head>
 <body>
 
 <div id="auth-gate">
     <div class="auth-box">
-        <h1 style="color:var(--kasi-green); margin-bottom:10px;">KASIHUB</h1>
-        <p style="color:#666; margin-bottom:30px;">Sign in to join the community</p>
-        <input type="email" id="auth-email" placeholder="Email Address">
+        <h1 style="color:var(--kasi-green)">KASIHUB</h1>
+        <input type="text" id="auth-user" placeholder="Name">
+        <input type="text" id="auth-kasi" placeholder="Kasi (e.g. Parys)">
+        <input type="email" id="auth-email" placeholder="Email">
         <input type="password" id="auth-pass" placeholder="Password">
-        <button class="btn-p" onclick="handleAuth()">CONTINUE</button>
-        <button id="bio-btn" style="background:none; border:none; color:var(--kasi-green); margin-top:20px; cursor:pointer; font-size:12px; display:none;" onclick="startBiometrics()"><i class="fa fa-fingerprint"></i> Use Fingerprint/Face ID</button>
+        <button class="btn-p" onclick="handleAuth()">ACCESS EMPIRE</button>
     </div>
 </div>
 
 <div id="app-shell" style="display:none;">
     <nav>
-        <div class="logo" style="font-weight:900; font-size:24px; color:var(--kasi-green); margin-bottom:40px;">KASI<span>HUB</span></div>
-        <div class="nav-link active" onclick="showTab('feed', this)"><i class="fa fa-th-large"></i> <span class="nav-label">Empire Wall</span></div>
-        <div class="nav-link" onclick="showTab('invite', this)"><i class="fa fa-paper-plane"></i> <span class="nav-label">Invite Friends</span></div>
-        <div class="nav-link" onclick="showTab('market', this)"><i class="fa fa-store"></i> <span class="nav-label">Kasi Market</span></div>
-        <div class="nav-link" onclick="logout()" style="margin-top:auto;"><i class="fa fa-sign-out-alt"></i> <span class="nav-label">Logout</span></div>
+        <div class="logo" style="color:var(--kasi-green); font-weight:900; font-size:22px; margin-bottom:40px; padding-left:12px;">KH</div>
+        <div class="nav-link active" onclick="showTab('feed', this)"><i class="fa fa-bolt"></i> <span class="nav-label">Live Feed</span></div>
+        <div class="nav-link" onclick="showTab('communities', this)"><i class="fa fa-map-marker-alt"></i> <span class="nav-label">Kasi Hubs</span></div>
+        <div class="nav-link" onclick="logout()" style="margin-top:auto;"><i class="fa fa-power-off"></i> <span class="nav-label">Logout</span></div>
     </nav>
 
-    <main id="main-content">
-        <section id="tab-feed" class="tab-view">
-            <div class="post-card" style="border-bottom: 3px solid var(--kasi-green)">
-                <textarea id="post-input" placeholder="What's the news in the Kasi?" style="width:100%; background:none; border:none; color:white; font-size:18px; resize:none; outline:none;"></textarea>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; border-top:1px solid #222; padding-top:15px;">
-                    <div>
-                        <label for="video-up" style="cursor:pointer; color:#888;"><i class="fa fa-video"></i> Upload Video</label>
-                        <input type="file" id="video-up" accept="video/*" style="display:none;" onchange="handleVideoUpload(this)">
-                    </div>
-                    <button class="btn-p" style="padding:8px 25px; width:auto;" onclick="publishPost()">Post</button>
+    <main>
+        <div id="tab-feed" class="tab-content">
+            <div class="post-card">
+                <textarea id="post-text" placeholder="What's happening live?" style="width:100%; background:none; border:none; color:white; font-size:18px; outline:none; resize:none;"></textarea>
+                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                    <label style="cursor:pointer; color:#555; font-size:14px;"><i class="fa fa-video"></i> Upload Media <input type="file" id="video-file" hidden accept="video/*"></label>
+                    <button class="btn-p" style="width:auto; padding:8px 25px;" onclick="uploadPost()">POST</button>
                 </div>
             </div>
-            <div id="wall-stream"></div>
-            
-            <footer style="padding:50px 0; text-align:center; opacity:0.3; font-size:11px;">
-                <p>© 2026 KasiHub Media. Compliant with S.A. Copyright Law & Google Publisher Policies.</p>
-                <p>Privacy Policy | Terms of Service | Ad Preferences</p>
-            </footer>
-        </section>
-
-        <section id="tab-invite" class="tab-view" style="display:none; text-align:center; padding-top:50px;">
-            <i class="fa fa-user-plus fa-4x" style="color:var(--kasi-green)"></i>
-            <h2>Grow the Empire</h2>
-            <p style="color:#666">Share this link to invite friends from other Kasis!</p>
-            <div style="background:#111; padding:20px; border-radius:15px; margin:20px 0; font-family:monospace;" id="my-link">https://kasihub.live/join?ref=Parys_Member</div>
-            <button class="btn-p" onclick="copyLink()">Copy Link</button>
-        </section>
+            <div id="feed-wall"></div>
+        </div>
     </main>
 
     <aside>
-        <h3 style="font-size:12px; color:var(--kasi-green); letter-spacing:2px; margin-bottom:20px;">24/7 KASI TV</h3>
-        <div style="margin-bottom:25px;">
-            <p style="font-size:12px; margin-bottom:10px;"><i class="fa fa-broadcast-tower"></i> SABC News Live</p>
-            <video controls poster="https://upload.wikimedia.org/wikipedia/en/thumb/4/4a/SABC_News_logo.svg/1200px-SABC_News_logo.svg.png">
-                <source src="https://example.com/live/sabc_news.m3u8" type="application/x-mpegURL">
-                Your browser does not support HLS streaming.
-            </video>
+        <div class="section-title">TV EMPIRE (20+ CHANNELS)</div>
+
+        <div class="channel-section">
+            <div class="channel-label"><div class="live-dot"></div> SABC NEWS</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UC8yH-uI81UUtEMDsowQyx1g" frameborder="0" allowfullscreen></iframe></div>
+            
+            <div class="channel-label"><div class="live-dot"></div> NEWZROOM AFRIKA</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UC_768mY_S9H_yMv2z9Z4Hkw" frameborder="0" allowfullscreen></iframe></div>
+            
+            <div class="channel-label"><div class="live-dot"></div> ENCA</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UC67j3-S_S_l-tB_0P_S0S1A" frameborder="0" allowfullscreen></iframe></div>
         </div>
-        <div>
-            <p style="font-size:12px; margin-bottom:10px;"><i class="fa fa-circle" style="color:red; font-size:8px;"></i> Newzroom Afrika</p>
-            <iframe width="100%" height="200" src="https://www.youtube.com/embed/live_stream?channel=UC_768mY_S9H_yMv2z9Z4Hkw" frameborder="0" style="border-radius:15px;" allowfullscreen></iframe>
+
+        <div class="channel-section">
+            <div class="section-title">SPORTS CENTER</div>
+            <div class="channel-label"><div class="live-dot"></div> SKY SPORTS</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UC0O-S_y-N5P_S_S0P_0S0A" frameborder="0" allowfullscreen></iframe></div>
+            
+            <div class="channel-label"><div class="live-dot"></div> BT SPORT NEWS</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UC_768mY_S9H_yMv2z9Z4Hkw" frameborder="0" allowfullscreen></iframe></div>
+            
+            <div class="channel-label"><div class="live-dot"></div> EUROSPORT</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UC8yH-uI81UUtEMDsowQyx1g" frameborder="0" allowfullscreen></iframe></div>
+        </div>
+
+        <div class="channel-section">
+            <div class="section-title">FINANCE & CRYPTO</div>
+            <div class="channel-label"><div class="live-dot"></div> BLOOMBERG</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg" frameborder="0" allowfullscreen></iframe></div>
+            
+            <div class="channel-label"><div class="live-dot"></div> CNBC LIVE</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UCv_S7xXo2XU" frameborder="0" allowfullscreen></iframe></div>
+            
+            <div class="channel-label"><div class="live-dot"></div> COINDESK TV</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UCmK9kXp_E0-I" frameborder="0" allowfullscreen></iframe></div>
+        </div>
+
+        <div class="channel-section">
+            <div class="section-title">ENTERTAINMENT</div>
+            <div class="channel-label"><div class="live-dot"></div> MTV LIVE</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg" frameborder="0" allowfullscreen></iframe></div>
+            
+            <div class="channel-label"><div class="live-dot"></div> LO-FI MUSIC 24/7</div>
+            <div class="channel-card"><iframe loading="lazy" width="100%" height="180" src="https://www.youtube.com/embed/jfKfPfyJRdk" frameborder="0" allowfullscreen></iframe></div>
         </div>
     </aside>
 </div>
-
-<div class="ai-fab" onclick="alert('Kasi AI Initializing...')"><i class="fa fa-robot"></i></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     const S_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co';
     const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
-    const _db = supabase.createClient(S_URL, S_KEY, { auth: { persistSession: true } });
+    const _db = supabase.createClient(S_URL, S_KEY);
 
-    // 1. BIOMETRIC CHECK
-    if (window.PublicKeyCredential) {
-        document.getElementById('bio-btn').style.display = 'block';
-    }
-
-    // 2. AUTH LOGIC
     async function handleAuth() {
-        const e = document.getElementById('auth-email').value;
-        const p = document.getElementById('auth-pass').value;
-        
-        const { data, error } = await _db.auth.signInWithPassword({ email: e, password: p });
-        
-        if(error) {
-            const { data: up, error: err2 } = await _db.auth.signUp({ email: e, password: p });
-            if(err2) alert(err2.message); else alert("Check email to confirm!");
-        } else {
-            location.reload();
-        }
+        const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
+        const u = document.getElementById('auth-user').value, k = document.getElementById('auth-kasi').value;
+        const { error } = await _db.auth.signUp({ email: e, password: p, options: { data: { username: u, kasi: k } } });
+        if(error) { const { error: lErr } = await _db.auth.signInWithPassword({ email: e, password: p }); if(lErr) alert(lErr.message); else location.reload(); }
     }
 
-    // 3. PAGE LOGIC
-    _db.auth.onAuthStateChange((event, session) => {
-        if (session) {
-            document.getElementById('auth-gate').style.display = 'none';
-            document.getElementById('app-shell').style.display = 'grid';
-            loadFeed();
-        }
+    _db.auth.onAuthStateChange((ev, session) => { 
+        if (session) { 
+            document.getElementById('auth-gate').style.display = 'none'; 
+            document.getElementById('app-shell').style.display = 'grid'; 
+            loadFeed(); 
+        } 
     });
+
+    async function uploadPost() {
+        const txt = document.getElementById('post-text').value, file = document.getElementById('video-file').files[0];
+        let vUrl = null;
+        if(file) {
+            const fName = `v_${Date.now()}`;
+            await _db.storage.from('videos').upload(fName, file);
+            vUrl = _db.storage.from('videos').getPublicUrl(fName).data.publicUrl;
+        }
+        const { data: { user } } = await _db.auth.getUser();
+        await _db.from('posts').insert([{ content: txt, video_url: vUrl, username: user.user_metadata.username, location: user.user_metadata.kasi }]);
+        document.getElementById('post-text').value = "";
+        loadFeed();
+    }
 
     async function loadFeed() {
         const { data: posts } = await _db.from('posts').select('*').order('created_at', { ascending: false });
-        const wall = document.getElementById('wall-stream');
-        wall.innerHTML = posts.map(p => `
+        document.getElementById('feed-wall').innerHTML = posts.map(p => `
             <div class="post-card">
-                <div style="display:flex; align-items:center; margin-bottom:15px;">
-                    <div style="width:40px; height:40px; background:var(--kasi-green); border-radius:10px; margin-right:12px;"></div>
-                    <div><b>${p.username || 'Resident'}</b><br><small style="color:#444">${p.location || 'Kasi'}</small></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <b style="color:var(--kasi-green)">${p.username}</b>
+                    <small style="opacity:0.3">${p.location}</small>
                 </div>
                 <p>${p.content}</p>
-                ${p.video_url ? `<video controls src="${p.video_url}" style="margin-top:10px;"></video>` : ''}
+                ${p.video_url ? `<video loop muted playsinline autoplay src="${p.video_url}" style="width:100%; border-radius:15px;"></video>` : ''}
             </div>
         `).join('');
     }
 
-    async function publishPost() {
-        const val = document.getElementById('post-input').value;
-        if(!val) return;
-        const { data: { user } } = await _db.auth.getUser();
-        await _db.from('posts').insert([{ user_id: user.id, content: val, username: user.email.split('@')[0] }]);
-        document.getElementById('post-input').value = "";
-        loadFeed();
-    }
-
     function showTab(id, el) {
-        document.querySelectorAll('.tab-view').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
         document.getElementById('tab-' + id).style.display = 'block';
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
-    }
-
-    async function handleVideoUpload(input) {
-        const file = input.files[0];
-        if(!file) return;
-        alert("Uploading video to Supabase Storage...");
-        // Logic for supabase.storage.from('videos').upload(...) goes here
-    }
-
-    function copyLink() {
-        navigator.clipboard.writeText(document.getElementById('my-link').innerText);
-        alert("Link copied! Send it on WhatsApp.");
     }
 
     async function logout() { await _db.auth.signOut(); location.reload(); }
