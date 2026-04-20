@@ -19,6 +19,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             display: flex; 
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* SIDEBAR */
@@ -26,11 +28,10 @@
             width: 260px; 
             height: 100vh; 
             background: var(--sidebar); 
-            position: fixed; 
             border-right: 1px solid #222; 
             padding: 20px; 
-            overflow-y: auto; 
-            z-index: 100;
+            display: flex;
+            flex-direction: column;
         }
 
         .logo { 
@@ -39,6 +40,7 @@
             margin-bottom: 30px; 
             text-align: center;
             color: var(--kasi-green);
+            letter-spacing: -1px;
         }
 
         .nav-link { 
@@ -55,7 +57,7 @@
 
         .nav-link i { margin-right: 15px; width: 20px; text-align: center; }
 
-        .nav-link:hover, .active { 
+        .nav-link:hover, .nav-link.active { 
             background: var(--kasi-green); 
             color: black; 
             font-weight: bold;
@@ -69,17 +71,24 @@
             letter-spacing: 2px; 
         }
 
-        /* MAIN CONTENT */
+        /* MAIN CONTENT AREA */
         main { 
-            margin-left: 260px; 
-            width: calc(100% - 260px); 
+            flex-grow: 1;
             padding: 30px; 
+            overflow-y: auto;
+            position: relative;
         }
 
-        .page-content { display: none; animation: fadeIn 0.4s ease; }
-        .active-page { display: block; }
+        .page-content { 
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.3s ease; 
+        }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page-content.active-page { 
+            display: block !important; /* Shown when active */
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* GRID SYSTEM */
         .grid { 
@@ -94,19 +103,15 @@
             border-radius: 12px; 
             overflow: hidden; 
             border: 1px solid #333;
-            transition: 0.3s;
         }
-
-        .v-card:hover { border-color: var(--kasi-green); }
 
         .thumb { 
             width: 100%; 
             aspect-ratio: 16/9; 
-            background: #000; 
+            background: #222; 
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #444;
         }
 
         .details { padding: 15px; }
@@ -118,21 +123,11 @@
             color: var(--kasi-green);
         }
 
-        button.primary-btn {
-            background: var(--kasi-green);
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* Mobile */
+        /* Responsive Mobile */
         @media (max-width: 768px) {
             nav { width: 70px; padding: 10px; }
-            nav span, .section-label, .logo span { display: none; }
-            main { margin-left: 70px; width: calc(100% - 70px); }
+            nav span, .section-label { display: none; }
+            .logo { font-size: 18px; }
         }
     </style>
 </head>
@@ -141,18 +136,16 @@
 <nav>
     <div class="logo">KasiHub</div>
     
-    <div class="nav-link active" onclick="showPage('home')"><i class="fa fa-home"></i> <span>Home</span></div>
+    <div class="nav-link active" onclick="showPage('home', this)"><i class="fa fa-home"></i> <span>Home</span></div>
     
     <div class="section-label">Active Kasies</div>
-    <div id="kasi-tabs">
-        <div class="nav-link">📍 <span>Parys</span></div>
-        <div class="nav-link">📍 <span>De Deur</span></div>
-    </div>
+    <div class="nav-link">📍 <span>Parys</span></div>
+    <div class="nav-link">📍 <span>De Deur</span></div>
 
     <div class="section-label">Explore</div>
-    <div class="nav-link" onclick="showPage('market')"><i class="fa fa-shopping-basket"></i> <span>Marketplace</span></div>
-    <div class="nav-link" onclick="showPage('sports')"><i class="fa fa-football"></i> <span>Sports</span></div>
-    <div class="nav-link" onclick="showPage('politics')"><i class="fa fa-landmark"></i> <span>Politics</span></div>
+    <div class="nav-link" onclick="showPage('market', this)"><i class="fa fa-shopping-basket"></i> <span>Marketplace</span></div>
+    <div class="nav-link" onclick="showPage('sports', this)"><i class="fa fa-football"></i> <span>Sports</span></div>
+    <div class="nav-link" onclick="showPage('politics', this)"><i class="fa fa-landmark"></i> <span>Politics</span></div>
 </nav>
 
 <main>
@@ -162,9 +155,9 @@
             <div class="v-card">
                 <div class="thumb"><i class="fa fa-play fa-3x"></i></div>
                 <div class="details">
-                    <span class="kasi-badge">Trending</span>
-                    <h4 style="margin:10px 0;">Welcome to KasiHub Platform</h4>
-                    <p style="color:#777; font-size:13px;">Admin • 1 hour ago</p>
+                    <span class="kasi-badge">Live</span>
+                    <h4 style="margin:10px 0;">Welcome to South Africa's Local Hub</h4>
+                    <p style="color:#777; font-size:13px;">1.2k people watching</p>
                 </div>
             </div>
         </div>
@@ -173,15 +166,15 @@
     <section id="market" class="page-content">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h1>Kasi Marketplace</h1>
-            <button class="primary-btn">+ Sell Item</button>
+            <button style="background: var(--kasi-green); border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">+ Post Item</button>
         </div>
         <div class="grid">
             <div class="v-card">
-                <div class="thumb" style="background: #222;">ITEM IMAGE</div>
+                <div class="thumb">PHOTO</div>
                 <div class="details">
                     <span class="kasi-badge">Parys</span>
-                    <h4 style="margin:5px 0;">Sample Product</h4>
-                    <p style="color: var(--kasi-green); font-weight: bold;">R 00.00</p>
+                    <h4 style="margin:5px 0;">Product Name</h4>
+                    <p style="color: var(--kasi-green); font-weight: bold;">R 0.00</p>
                 </div>
             </div>
         </div>
@@ -189,31 +182,48 @@
 
     <section id="sports" class="page-content">
         <h1>Local Sports News</h1>
-        <p style="color: #888;">Coming soon: Local league scores.</p>
+        <p style="color: #666;">No local matches scheduled for today.</p>
+    </section>
+
+    <section id="politics" class="page-content">
+        <h1>Local Politics</h1>
+        <p style="color: #666;">Updates on ward councilors and local news.</p>
     </section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // 1. YOUR CONNECTION (PUT YOUR DATA HERE)
-    const SUPABASE_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
+    // 1. SUPABASE CONNECTION
+    const SUPABASE_URL = 'PASTE_YOUR_API_URL_HERE';
+    const SUPABASE_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
     
-    const _supabase = supabase.createClient(https://myxbhcherlhpoqmycxdj.supabase.co,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE );
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 2. PAGE NAVIGATION LOGIC
-    function showPage(pageId) {
-        // Hide all
-        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
-        // Show selected
-        document.getElementById(pageId).classList.add('active-page');
-        // Update sidebar links
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        // We find the link that matches the click
-        event.currentTarget.classList.add('active');
+    // 2. FAIL-SAFE NAVIGATION LOGIC
+    function showPage(pageId, element) {
+        console.log("Switching to: " + pageId);
+
+        // Hide all pages
+        const pages = document.querySelectorAll('.page-content');
+        pages.forEach(page => {
+            page.classList.remove('active-page');
+        });
+
+        // Show the clicked page
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active-page');
+        }
+
+        // Update sidebar links UI
+        const links = document.querySelectorAll('.nav-link');
+        links.forEach(link => link.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+        }
     }
 
-    console.log("KasiHub System Initialized.");
+    console.log("KasiHub Navigation System Online.");
 </script>
 
 </body>
