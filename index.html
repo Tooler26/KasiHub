@@ -3,149 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KasiHub | Elite Social Network</title>
+    <title>KasiHub | The Community Wall</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --kasi-green: #2ecc71; --kasi-dark: #080808; --card: #121212; --blue-badge: #3ea6ff; --gold-badge: #f1c40f; }
-        body { background: var(--kasi-dark); color: white; font-family: 'Roboto', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --kasi-green: #2ecc71; --kasi-dark: #050505; --card: #121212; --blue-badge: #3ea6ff; --gold-badge: #f1c40f; }
         
-        #loading-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--kasi-green); width: 0%; z-index: 100; transition: 0.4s; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background: #000; color: white; font-family: 'Roboto', sans-serif; }
+        
+        /* 1. INTRO ANIMATION */
+        #site-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
+        .loading-logo { display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; color: white; margin-bottom: 25px; letter-spacing: 2px; }
+        .logo-icon { width: 45px; height: 45px; border-radius: 12px; border: 4px solid var(--kasi-green); display: flex; align-items: center; justify-content: center; margin-right: 15px; color: var(--kasi-green); position: relative; }
+        .logo-icon::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 8px; background: rgba(46, 204, 113, 0.2); animation: logo-glow 2s infinite; }
+        @keyframes logo-glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; transform: scale(1.1); } }
+        .loading-bar-container { width: 200px; background: #1a1a1a; height: 4px; border-radius: 2px; overflow: hidden; }
+        .loading-bar-fill { height: 100%; background: var(--kasi-green); width: 0%; transition: 0.1s linear; box-shadow: 0 0 10px var(--kasi-green); }
 
-        /* SIDEBAR */
+        /* 2. MAIN LAYOUT */
+        #main-site { display: none; width: 100%; height: 100vh; display: flex; opacity: 0; transition: opacity 0.8s; }
+        #main-site.loaded { display: flex !important; opacity: 1; }
+
         nav { width: 240px; background: #000; border-right: 1px solid #1a1a1a; padding: 15px; display: flex; flex-direction: column; }
-        .nav-link { padding: 12px; display: flex; align-items: center; color: #f1f1f1; text-decoration: none; border-radius: 10px; margin-bottom: 5px; cursor: pointer; }
-        .nav-link i { margin-right: 20px; font-size: 18px; width: 20px; text-align: center; }
-        .nav-link.active { background: #272727; border-left: 3px solid var(--kasi-green); }
+        .nav-link { padding: 12px; display: flex; align-items: center; color: #f1f1f1; text-decoration: none; border-radius: 10px; margin-bottom: 5px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .nav-link i { margin-right: 15px; width: 20px; text-align: center; font-size: 18px; }
+        .nav-link:hover, .nav-link.active { background: #1a1a1a; color: var(--kasi-green); }
 
-        /* STORIES AREA */
-        .stories-container { display: flex; gap: 15px; padding: 10px 0 25px 0; overflow-x: auto; scrollbar-width: none; }
-        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 3px solid var(--kasi-green); padding: 2px; flex-shrink: 0; cursor: pointer; }
-        .story-img { width: 100%; height: 100%; border-radius: 50%; background: #222; object-fit: cover; }
+        main { flex-grow: 1; overflow-y: auto; padding: 20px 40px; background: #080808; }
+        .page-content { display: none; max-width: 800px; margin: 0 auto; }
+        .active-page { display: block !important; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* MAIN CONTENT */
-        main { flex-grow: 1; overflow-y: auto; padding: 20px 40px; }
-        .page-content { display: none; animation: fadeIn 0.3s ease; }
-        .active-page { display: block !important; }
+        /* 3. KASI WALL STYLES */
+        .post-creator { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 30px; }
+        .post-input { width: 100%; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; margin-bottom: 15px; }
+        .post-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #222; padding-top: 15px; }
+        .action-icon { color: #888; cursor: pointer; font-size: 18px; transition: 0.2s; }
+        .action-icon:hover { color: var(--kasi-green); }
 
-        /* BADGES */
-        .badge-blue { color: var(--blue-badge); font-size: 12px; margin-left: 5px; }
-        .badge-gold { color: var(--gold-badge); font-size: 12px; margin-left: 5px; }
-
-        /* SIGN UP MODAL */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-card { background: #111; padding: 30px; border-radius: 20px; width: 400px; border: 1px solid #333; text-align: center; }
-        .badge-option { padding: 15px; border-radius: 12px; border: 1px solid #333; margin: 10px 0; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: space-between; }
-        .badge-option:hover { border-color: var(--kasi-green); background: #1a1a1a; }
+        .wall-post { background: var(--card); border-radius: 15px; border: 1px solid #222; padding: 20px; margin-bottom: 20px; }
+        .post-user { display: flex; align-items: center; margin-bottom: 15px; }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: #333; margin-right: 12px; border: 2px solid #222; }
+        .user-info b { font-size: 15px; display: flex; align-items: center; }
+        .post-content { line-height: 1.6; color: #ddd; margin-bottom: 15px; }
+        .post-image { width: 100%; border-radius: 12px; margin-bottom: 15px; max-height: 400px; object-fit: cover; }
+        
+        .interaction-row { display: flex; gap: 25px; border-top: 1px solid #222; padding-top: 15px; }
+        .int-btn { cursor: pointer; color: #888; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .int-btn:hover { color: var(--kasi-green); }
 
         .panic-btn { background: #e74c3c; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; margin-top: auto; cursor: pointer; }
+        .primary-btn { background: var(--kasi-green); color: #000; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="loading-bar"></div>
-
-<div class="modal-overlay" id="badge-modal">
-    <div class="modal-card">
-        <h2>Get Verified 🚀</h2>
-        <p style="color: #888; font-size: 14px;">Choose your KasiHub badge status</p>
-        
-        <div class="badge-option" onclick="selectBadge('blue')">
-            <span>Blue Badge (Community Leader)</span>
-            <i class="fa fa-check-circle" style="color: var(--blue-badge);"></i>
-        </div>
-        <div class="badge-option" onclick="selectBadge('gold')">
-            <span>Gold Badge (Kasi Business)</span>
-            <i class="fa fa-certificate" style="color: var(--gold-badge);"></i>
-        </div>
-        
-        <button onclick="closeModal()" style="margin-top: 20px; background: none; border: none; color: #555; cursor: pointer;">Maybe Later</button>
+<div id="site-loader">
+    <div class="loading-logo">
+        <div class="logo-icon">K</div>
+        <div class="logo-text">KASI<span>HUB</span></div>
+    </div>
+    <div class="loading-bar-container">
+        <div class="loading-bar-fill" id="load-progress"></div>
     </div>
 </div>
 
-<nav>
-    <div style="font-size: 24px; font-weight: 900; color: var(--kasi-green); margin-bottom: 30px; padding-left: 10px;">KasiHub</div>
-    <div class="nav-link active" onclick="showPage('home', this)"><i class="fa fa-house"></i> Home</div>
-    <div class="nav-link" onclick="showPage('profile', this)"><i class="fa fa-user"></i> My Profile</div>
-    <div class="nav-link" onclick="openModal()"><i class="fa fa-star"></i> Get Verified</div>
-    <div class="nav-link" onclick="showPage('mall', this)"><i class="fa fa-store"></i> Kasi Mall</div>
-    <button class="panic-btn">EMERGENCY</button>
-</nav>
+<div id="main-site">
+    <nav>
+        <div style="font-size: 22px; font-weight: 900; color: var(--kasi-green); margin-bottom: 30px; padding-left: 10px;">KasiHub</div>
+        <div class="nav-link active" onclick="showPage('wall', this)"><i class="fa fa-users"></i> Kasi Wall</div>
+        <div class="nav-link" onclick="showPage('studio', this)"><i class="fa fa-play-circle"></i> Kasi Studio</div>
+        <div class="nav-link" onclick="showPage('mall', this)"><i class="fa fa-store"></i> Kasi Mall</div>
+        <div class="nav-link" onclick="showPage('gigs', this)"><i class="fa fa-briefcase"></i> Quick Gigs</div>
+        <div class="nav-link" onclick="showPage('profile', this)"><i class="fa fa-user-circle"></i> My Profile</div>
+        
+        <button class="panic-btn" onclick="alert('🚨 Emergency signal ready...')">EMERGENCY</button>
+    </nav>
 
-<main>
-    <section id="home" class="page-content active-page">
-        <div class="stories-container">
-            <div class="story-circle"><div class="story-img" style="display:flex; align-items:center; justify-content:center; font-size:10px;">You</div></div>
-            <div class="story-circle"><div class="story-img" style="background: #333;"></div></div>
-            <div class="story-circle"><div class="story-img" style="background: #444;"></div></div>
-            <div class="story-circle"><div class="story-img" style="background: #555;"></div></div>
-        </div>
+    <main>
+        <section id="wall" class="page-content active-page">
+            <h1 style="margin-bottom: 5px;">Kasi Wall</h1>
+            <p style="color: #666; margin-bottom: 25px;">See what's happening in Parys right now.</p>
 
-        <h2>Latest from Parys</h2>
-        <div style="background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #222;">
-            <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                <div style="width: 35px; height: 35px; background: #333; border-radius: 50%; margin-right: 10px;"></div>
-                <b>Dj Vaal Mix <i class="fa fa-check-circle badge-blue"></i></b>
+            <div class="post-creator">
+                <textarea class="post-input" placeholder="What's happening in your Kasi?" rows="2"></textarea>
+                <div class="post-actions">
+                    <div style="display: flex; gap: 20px;">
+                        <i class="fa fa-image action-icon" title="Add Photo"></i>
+                        <i class="fa fa-video action-icon" title="Add Video"></i>
+                        <i class="fa fa-map-marker-alt action-icon" title="Tag Location"></i>
+                    </div>
+                    <button class="primary-btn" onclick="addNewPost()">Post</button>
+                </div>
             </div>
-            <p style="color: #ccc;">Dropping a new set at the taxi rank tonight! 🔥 #ParysVibes</p>
-        </div>
 
-        <div style="background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid #222;">
-            <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                <div style="width: 35px; height: 35px; background: #333; border-radius: 50%; margin-right: 10px;"></div>
-                <b>Uncle Steve Spaza <i class="fa fa-certificate badge-gold"></i></b>
+            <div id="kasi-feed">
+                <div class="wall-post">
+                    <div class="post-user">
+                        <div class="user-avatar" style="background: #2ecc71;"></div>
+                        <div class="user-info">
+                            <b>Dj Vaal Mix <i class="fa fa-check-circle" style="color:#3ea6ff; margin-left:5px;"></i></b>
+                            <span style="font-size: 11px; color: #555;">2 hours ago • Parys Section A</span>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        Just arrived at the taxi rank! The vibe is 100. Catch me live on the Radio tab at 19:00 tonight! 🔥🇿🇦
+                    </div>
+                    <div class="interaction-row">
+                        <div class="int-btn"><i class="fa fa-thumbs-up"></i> 1.2k</div>
+                        <div class="int-btn"><i class="fa fa-comment"></i> 45</div>
+                        <div class="int-btn"><i class="fa fa-share"></i> Share</div>
+                    </div>
+                </div>
+
+                <div class="wall-post">
+                    <div class="post-user">
+                        <div class="user-avatar" style="background: #f1c40f;"></div>
+                        <div class="user-info">
+                            <b>Mama's Kitchen <i class="fa fa-certificate" style="color:#f1c40f; margin-left:5px;"></i></b>
+                            <span style="font-size: 11px; color: #555;">5 hours ago • Near Library</span>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        Lunch Special: Kota + CoolDrink for R45 only! Come hungry neighbors. 🍔
+                    </div>
+                    <div class="interaction-row">
+                        <div class="int-btn"><i class="fa fa-thumbs-up"></i> 856</div>
+                        <div class="int-btn"><i class="fa fa-comment"></i> 12</div>
+                        <div class="int-btn"><i class="fa fa-share"></i> Share</div>
+                    </div>
+                </div>
             </div>
-            <p style="color: #ccc;">Fresh bread just arrived. Section 4! 🍞</p>
-        </div>
-    </section>
+        </section>
 
-    <section id="profile" class="page-content">
-        <div style="text-align: center; padding: 40px;">
-            <div style="width: 100px; height: 100px; background: #333; border-radius: 50%; margin: 0 auto 15px; border: 2px solid var(--kasi-green);"></div>
-            <h2 id="display-name">@KasiHub_User</h2>
-            <p id="badge-display" style="font-size: 14px; color: #888;">Standard Citizen</p>
-        </div>
-    </section>
-
-    <section id="mall" class="page-content"><h1>Kasi Mall</h1></section>
-</main>
+        <section id="studio" class="page-content"><h1>Kasi Studio</h1><p>Upload your videos here.</p></section>
+        <section id="mall" class="page-content"><h1>Kasi Mall</h1><p>Local shops marketplace.</p></section>
+        <section id="gigs" class="page-content"><h1>Quick Gigs</h1><p>Find work nearby.</p></section>
+        <section id="profile" class="page-content"><h1>My Profile</h1></section>
+    </main>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    const SUPABASE_URL = 'PASTE_YOUR_URL_HERE';
-    const SUPABASE_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
+    // ==========================================
+    // 1. PASTE YOUR KEYS HERE
+    // ==========================================
+    const SUPABASE_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
+    
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // MODAL LOGIC
-    function openModal() { document.getElementById('badge-modal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('badge-modal').style.display = 'none'; }
-
-    function selectBadge(type) {
-        const badgeDisplay = document.getElementById('badge-display');
-        const displayName = document.getElementById('display-name');
-        
-        if(type === 'blue') {
-            badgeDisplay.innerHTML = '<span style="color: #3ea6ff;">Community Leader</span>';
-            displayName.innerHTML += ' <i class="fa fa-check-circle badge-blue"></i>';
-        } else {
-            badgeDisplay.innerHTML = '<span style="color: #f1c40f;">Verified Business</span>';
-            displayName.innerHTML += ' <i class="fa fa-certificate badge-gold"></i>';
-        }
-        alert("Verification Request Sent! We will verify your Kasi location shortly.");
-        closeModal();
+    // 2. INTRO LOADER
+    window.onload = function() {
+        let progressBar = document.getElementById('load-progress');
+        let width = 0;
+        let id = setInterval(() => {
+            if (width >= 100) {
+                clearInterval(id);
+                document.getElementById('site-loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('site-loader').style.display = 'none';
+                    document.getElementById('main-site').classList.add('loaded');
+                }, 500);
+            } else {
+                width++;
+                progressBar.style.width = width + '%';
+            }
+        }, 15);
     }
 
-    // NAVIGATION
+    // 3. WALL POST LOGIC
+    function addNewPost() {
+        const input = document.querySelector('.post-input');
+        if(!input.value) return alert("Write something first!");
+        
+        const feed = document.getElementById('kasi-feed');
+        const newPost = document.createElement('div');
+        newPost.className = 'wall-post';
+        newPost.innerHTML = `
+            <div class="post-user">
+                <div class="user-avatar" style="background: #555;"></div>
+                <div class="user-info">
+                    <b>You (Kasi Legend)</b>
+                    <span style="font-size: 11px; color: #555;">Just now • Parys</span>
+                </div>
+            </div>
+            <div class="post-content">${input.value}</div>
+            <div class="interaction-row">
+                <div class="int-btn"><i class="fa fa-thumbs-up"></i> 0</div>
+                <div class="int-btn"><i class="fa fa-comment"></i> 0</div>
+                <div class="int-btn"><i class="fa fa-share"></i> Share</div>
+            </div>
+        `;
+        feed.prepend(newPost);
+        input.value = "";
+    }
+
+    // 4. NAVIGATION
     function showPage(pageId, element) {
-        const bar = document.getElementById('loading-bar');
-        bar.style.width = '30%';
-        setTimeout(() => {
-            bar.style.width = '100%';
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId).classList.add('active-page');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if(element) element.classList.add('active');
-            setTimeout(() => { bar.style.width = '0%'; }, 300);
-        }, 400);
+        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(pageId).classList.add('active-page');
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        if(element) element.classList.add('active');
     }
 </script>
 
