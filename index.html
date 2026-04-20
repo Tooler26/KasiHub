@@ -3,247 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KasiHub | The Social Empire</title>
+    <title>KasiHub | AI Social Empire</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --kasi-green: #2ecc71; --kasi-dark: #050505; --card: #121212; --blue-badge: #3ea6ff; --gold-badge: #f1c40f; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background: #000; color: white; font-family: 'Roboto', sans-serif; }
+        :root { 
+            --kasi-green: #2ecc71; 
+            --kasi-dark: #050505; 
+            --card: rgba(25, 25, 25, 0.85); 
+            --glass: rgba(255, 255, 255, 0.05);
+            --ai-purple: #8e44ad;
+        }
 
-        /* 1. INTRO ANIMATION */
-        #site-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; transition: 0.8s; }
-        .loading-logo { display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; color: white; margin-bottom: 25px; letter-spacing: 2px; }
-        .logo-icon { width: 45px; height: 45px; border-radius: 12px; border: 4px solid var(--kasi-green); display: flex; align-items: center; justify-content: center; margin-right: 15px; color: var(--kasi-green); position: relative; }
-        .logo-icon::after { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 8px; background: rgba(46, 204, 113, 0.2); animation: glow 2s infinite; }
-        @keyframes glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; transform: scale(1.1); } }
-        .loading-bar-container { width: 200px; background: #1a1a1a; height: 4px; border-radius: 2px; overflow: hidden; }
-        .loading-bar-fill { height: 100%; background: var(--kasi-green); width: 0%; transition: 0.1s linear; }
+        /* 1. ANIMATED LIVE BACKGROUND */
+        body { 
+            margin: 0; padding: 0; width: 100%; height: 100vh; 
+            background: radial-gradient(circle at 50% 50%, #0a110a 0%, #000000 100%);
+            background-size: 200% 200%;
+            animation: bgMove 15s ease infinite;
+            color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; 
+        }
+        @keyframes bgMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* 2. AUTHENTICATION MODAL */
-        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(10px); }
-        .auth-card { background: #111; padding: 30px; border-radius: 20px; width: 350px; border: 1px solid #222; text-align: center; }
-        .auth-input { width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 10px; color: white; margin-bottom: 15px; box-sizing: border-box; }
-        .badge-select { display: flex; gap: 8px; margin-bottom: 20px; }
-        .badge-opt { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #333; font-size: 10px; cursor: pointer; transition: 0.3s; }
-        .badge-opt.selected { border-color: var(--kasi-green); background: rgba(46, 204, 113, 0.1); }
+        /* 2. UNIVERSAL RESPONSIVE GRID */
+        #main-site { 
+            display: grid; 
+            grid-template-columns: 240px 1fr 380px; 
+            height: 100vh; opacity: 0; transition: 0.8s;
+        }
+        #main-site.loaded { opacity: 1; display: grid !important; }
 
-        /* 3. MAIN APP LAYOUT */
-        #main-site { display: none; width: 100%; height: 100vh; opacity: 0; transition: 1s; }
-        #main-site.loaded { display: flex !important; opacity: 1; }
+        @media (max-width: 1100px) { #main-site { grid-template-columns: 80px 1fr; } aside { display: none; } }
+        @media (max-width: 600px) { 
+            #main-site { grid-template-columns: 1fr; grid-template-rows: 1fr 70px; }
+            nav { flex-direction: row !important; width: 100% !important; height: 70px; border-top: 1px solid var(--glass); }
+        }
 
-        nav { width: 240px; background: #000; border-right: 1px solid #1a1a1a; padding: 15px; display: flex; flex-direction: column; }
-        .nav-link { padding: 12px; display: flex; align-items: center; color: #f1f1f1; text-decoration: none; border-radius: 10px; margin-bottom: 5px; cursor: pointer; font-size: 14px; }
-        .nav-link i { margin-right: 15px; width: 20px; text-align: center; font-size: 18px; }
-        .nav-link.active, .nav-link:hover { background: #1a1a1a; color: var(--kasi-green); }
+        /* 3. COMPONENTS */
+        nav { background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-right: 1px solid var(--glass); padding: 20px; display: flex; flex-direction: column; }
+        .nav-link { padding: 15px; border-radius: 15px; color: #888; display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+        .nav-link.active { background: var(--kasi-green); color: #000; font-weight: bold; }
 
-        main { flex: 1; overflow-y: auto; padding: 20px 40px; background: #080808; border-right: 1px solid #1a1a1a; }
-        
-        /* 4. TRENDS SIDEBAR (NEW) */
-        aside { width: 320px; background: #000; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
-        .trend-card { background: var(--card); border-radius: 15px; padding: 15px; border: 1px solid #222; }
-        .trend-card h4 { margin: 0 0 10px 0; color: var(--kasi-green); font-size: 14px; text-transform: uppercase; }
+        main { overflow-y: auto; padding: 20px; }
+        aside { background: rgba(0,0,0,0.5); border-left: 1px solid var(--glass); padding: 20px; overflow-y: auto; }
 
-        .page-content { display: none; max-width: 700px; margin: 0 auto; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .active-page { display: block !important; }
+        .primary-btn { background: var(--kasi-green); border: none; padding: 12px 24px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .primary-btn:active { transform: scale(0.95); }
 
-        /* 5. POSTING UI */
-        .post-creator { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 30px; }
-        .post-input { width: 100%; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; }
-        .wall-post { background: var(--card); border-radius: 15px; border: 1px solid #222; padding: 20px; margin-bottom: 20px; }
-        .post-user { display: flex; align-items: center; margin-bottom: 12px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #222; margin-right: 12px; }
-        
-        .primary-btn { background: var(--kasi-green); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .panic-btn { background: #e74c3c; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: auto; cursor: pointer; }
+        /* 4. AI & CHAT FLOATING BUTTONS */
+        .fab-container { position: fixed; bottom: 90px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
+        .fab { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.5); transition: 0.3s; }
+        .fab-ai { background: var(--ai-purple); border: 2px solid #a29bfe; }
+        .fab-support { background: #2980b9; }
+
+        /* 5. MODALS */
+        .kasi-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 10001; padding: 20px; }
+        .modal-content { background: #111; padding: 30px; border-radius: 25px; border: 1px solid #333; width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+
+        /* LEGAL FOOTER */
+        .legal-footer { padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; font-size: 12px; color: #555; text-align: center; line-height: 1.8; }
     </style>
 </head>
 <body>
 
-<div id="site-loader">
-    <div class="loading-logo"><div class="logo-icon">K</div>KASI<span>HUB</span></div>
-    <div class="loading-bar-container"><div class="loading-bar-fill" id="load-progress"></div></div>
+<div id="auth-overlay" style="position:fixed; inset:0; background:#000; z-index:10002; display:none; align-items:center; justify-content:center;">
+    <div class="modal-content" style="text-align:center;">
+        <h2 style="color:var(--kasi-green)">Welcome to KasiHub</h2>
+        <input type="email" id="reg-email" placeholder="Email" style="width:100%; padding:12px; margin:10px 0; border-radius:10px; background:#222; border:1px solid #444; color:white;">
+        <input type="password" id="reg-pass" placeholder="Password" style="width:100%; padding:12px; margin:10px 0; border-radius:10px; background:#222; border:1px solid #444; color:white;">
+        <button class="primary-btn" style="width:100%; margin-top:10px;" onclick="handleLogin()">Login / Sign Up</button>
+    </div>
 </div>
 
-<div id="auth-overlay">
-    <div class="auth-card" id="signup-box">
-        <h3>Join the Community</h3>
-        <input type="text" id="reg-user" class="auth-input" placeholder="Full Name">
-        <input type="email" id="reg-email" class="auth-input" placeholder="Email">
-        <input type="password" id="reg-pass" class="auth-input" placeholder="Password">
-        <input type="text" id="reg-kasi" class="auth-input" placeholder="Kasi (e.g. Parys)">
-        <div class="badge-select">
-            <div class="badge-opt selected" onclick="pickBadge('standard', this)">Citizen</div>
-            <div class="badge-opt" onclick="pickBadge('blue', this)" style="color:var(--blue-badge)">Leader</div>
-            <div class="badge-opt" onclick="pickBadge('gold', this)" style="color:var(--gold-badge)">Business</div>
+<div id="ai-modal" class="kasi-modal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="color:var(--ai-purple); margin:0;"><i class="fa fa-robot"></i> Kasi AI</h3>
+            <span onclick="closeModals()" style="cursor:pointer;">&times;</span>
         </div>
-        <button class="primary-btn" style="width:100%" onclick="handleSignUp()">Create Account</button>
-        <p style="font-size:12px; margin-top:15px; color:#666;">Have an account? <span style="color:var(--kasi-green); cursor:pointer;" onclick="toggleAuth()">Login</span></p>
-    </div>
-    <div class="auth-card" id="login-box" style="display:none;">
-        <h3>Welcome Back</h3>
-        <input type="email" id="login-email" class="auth-input" placeholder="Email">
-        <input type="password" id="login-pass" class="auth-input" placeholder="Password">
-        <button class="primary-btn" style="width:100%" onclick="handleLogin()">Login</button>
-        <p style="font-size:12px; margin-top:15px; color:#666;">New here? <span style="color:var(--kasi-green); cursor:pointer;" onclick="toggleAuth()">Sign Up</span></p>
+        <div id="ai-response" style="background:#000; padding:15px; border-radius:15px; margin-bottom:15px; height:200px; overflow-y:auto; font-size:14px; border:1px solid #222;">
+            Ask me anything about Parys, business, or tech!
+        </div>
+        <input type="text" id="ai-input" placeholder="Type your question..." style="width:100%; background:transparent; border:1px solid #444; padding:12px; border-radius:10px; color:white;">
+        <button class="primary-btn" style="background:var(--ai-purple); color:white; width:100%; margin-top:10px;" onclick="askAI()">Ask AI</button>
     </div>
 </div>
 
 <div id="main-site">
     <nav>
-        <div style="font-size: 20px; font-weight: 900; color: var(--kasi-green); margin-bottom: 30px; padding-left: 10px;">KASI<span>HUB</span></div>
-        <div class="nav-link active" onclick="showPage('wall', this)"><i class="fa fa-users"></i> Kasi Wall</div>
-        <div class="nav-link" onclick="showPage('mall', this)"><i class="fa fa-store"></i> Kasi Mall</div>
-        <div class="nav-link" onclick="showPage('profile', this)"><i class="fa fa-user-circle"></i> My Profile</div>
-        <button class="panic-btn">EMERGENCY</button>
+        <div style="font-size: 24px; font-weight: 900; color: var(--kasi-green); margin-bottom: 30px;">KASI<span>HUB</span></div>
+        <div class="nav-link active" onclick="showPage('wall', this)"><i class="fa fa-home"></i> <span>Feed</span></div>
+        <div class="nav-link" onclick="showPage('invite', this)"><i class="fa fa-user-plus"></i> <span>Invite Friends</span></div>
+        <div class="nav-link" onclick="showPage('mall', this)"><i class="fa fa-store"></i> <span>Market</span></div>
+        <div style="margin-top:auto;">
+            <button class="primary-btn" style="background:#e74c3c; color:white; width:100%;" onclick="alert('Emergency Alert Sent!')">PANIC</button>
+        </div>
     </nav>
 
     <main>
-        <section id="wall" class="page-content active-page">
-            <div class="post-creator">
-                <textarea class="post-input" placeholder="What's happening in Parys?" rows="2"></textarea>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                    <div style="color:#666;"><i class="fa fa-image" style="cursor:pointer; margin-right:15px;"></i><i class="fa fa-video" style="cursor:pointer;"></i></div>
-                    <button class="primary-btn" onclick="addNewPost()">Post to Wall</button>
-                </div>
-            </div>
+        <section id="wall" class="page-content">
             <div id="kasi-feed"></div>
+            
+            <div class="legal-footer">
+                <p><b>KasiHub Platform Policies</b></p>
+                <p>© 2026 KasiHub Media. All Rights Reserved. This website complies with the South African Copyright Act. No part of this platform may be reproduced without written permission.</p>
+                <p><b>Google AdSense Compliance:</b> We adhere strictly to the AdSense Program Policies. We do not host prohibited content, and we respect user privacy through our transparent data collection methods.</p>
+                <p>Privacy Policy | Terms of Service | Cookie Policy</p>
+            </div>
         </section>
 
-        <section id="profile" class="page-content" style="text-align:center;">
-            <div class="user-avatar" style="width:80px; height:80px; margin: 0 auto 20px;"></div>
-            <h2 id="user-welcome">Citizen</h2>
-            <p id="user-kasi" style="color:#666;"></p>
-            <button class="primary-btn" onclick="logout()" style="background:#222; color:white;">Sign Out</button>
+        <section id="invite" class="page-content" style="display:none; text-align:center;">
+            <i class="fa fa-users fa-4x" style="color:var(--kasi-green); margin-bottom:20px;"></i>
+            <h2>Expand the Empire</h2>
+            <p style="color:#888;">Invite friends from different Kasis to join the hub!</p>
+            <div style="background:#111; padding:20px; border-radius:20px; border:1px solid #333; margin:20px 0;">
+                <p style="font-size:12px; color:#555;">YOUR INVITE LINK:</p>
+                <b id="invite-link">https://kasihub.co.za/join?ref=Parys_Member</b><br><br>
+                <button class="primary-btn" onclick="copyInvite()">Copy Link</button>
+            </div>
         </section>
-
-        <section id="mall" class="page-content"><h1>Kasi Mall</h1><p>Coming Soon...</p></section>
     </main>
 
     <aside>
-        <div class="trend-card">
-            <h4><i class="fa fa-play-circle"></i> SABC News Live</h4>
-            <iframe width="100%" height="150" src="https://www.youtube.com/embed/live_stream?channel=UC8yH-uI81UUtEMDsowQyx1g" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>
-        </div>
-        <div class="trend-card">
-            <h4><i class="fa fa-trophy"></i> Soccer Updates</h4>
-            <div style="font-size:12px; color:#ccc;">
-                <p>⚽ <b>PSL:</b> Kaizer Chiefs vs Orlando Pirates (Sat 15:00)</p>
-                <hr style="border:0; border-top:1px solid #333;">
-                <p>⚽ <b>SuperSport:</b> Highlights Loading...</p>
-            </div>
-        </div>
-        <div class="trend-card">
-            <h4><i class="fa fa-bolt"></i> Loadshedding Parys</h4>
-            <div style="background:#222; padding:10px; border-radius:8px; text-align:center;">
-                <span style="color:var(--gold-badge); font-weight:bold;">Stage 0</span>
-                <div style="font-size:10px;">No outages scheduled</div>
-            </div>
-        </div>
+        <h4 style="color:var(--kasi-green); margin-top:0;">LIVE KASI TV</h4>
+        <iframe width="100%" height="200" src="https://www.youtube.com/embed/live_stream?channel=UC8yH-uI81UUtEMDsowQyx1g" frameborder="0" style="border-radius:15px; margin-bottom:15px;" allowfullscreen></iframe>
+        <iframe width="100%" height="200" src="https://www.youtube.com/embed/live_stream?channel=UC_768mY_S9H_yMv2z9Z4Hkw" frameborder="0" style="border-radius:15px;" allowfullscreen></iframe>
     </aside>
+</div>
+
+<div class="fab-container">
+    <div class="fab fab-ai" onclick="openAI()" title="Kasi AI Assistant"><i class="fa fa-robot"></i></div>
+    <div class="fab fab-support" onclick="alert('Connecting to Live Agent...')" title="Live Support"><i class="fa fa-headset"></i></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // === CONFIGURATION === (RE-PASTE YOUR KEYS HERE)
-    const SUPABASE_URL = 'https://myxbhcherlhpoqmycxdj.supabase.co'; 
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15eGJoY2hlcmxocG9xbXljeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzE0NDgsImV4cCI6MjA5MjI0NzQ0OH0.2pncYZ1fn4Nn1KrwAYUEYuevokTs2WxOcx_65u2_MHE';
+    // CONFIG (Paste your keys)
+    const SUPABASE_URL = 'PASTE_URL';
+    const SUPABASE_KEY = 'PASTE_KEY';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let currentUser = null;
-    let selectedBadge = 'standard';
-
-    // === STARTUP ENGINE ===
-    window.onload = function() {
-        let bar = document.getElementById('load-progress'), width = 0;
-        let id = setInterval(async () => {
-            if (width >= 100) {
-                clearInterval(id);
-                document.getElementById('site-loader').style.opacity = '0';
-                setTimeout(checkUser, 600);
-            } else {
-                width++; bar.style.width = width + '%';
-            }
-        }, 10);
-    }
-
-    async function checkUser() {
-        document.getElementById('site-loader').style.display = 'none';
+    window.onload = async () => {
         const { data: { user } } = await _supabase.auth.getUser();
         if (user) {
-            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
-            currentUser = { ...user, ...profile };
-            enterSite();
+            document.getElementById('main-site').classList.add('loaded');
+            loadPosts();
         } else {
             document.getElementById('auth-overlay').style.display = 'flex';
         }
     }
 
-    // === WALL ACTIONS ===
-    async function addNewPost() {
-        const input = document.querySelector('.post-input');
-        if(!input.value.trim()) return;
-        const { error } = await _supabase.from('posts').insert([{ 
-            user_id: currentUser.id, 
-            content: input.value,
-            username: currentUser.username || "Resident",
-            badge_type: currentUser.badge_type,
-            location: currentUser.kasi_location
-        }]);
-        if(!error) { input.value = ""; loadPosts(); }
+    // AI LOGIC (Free Public API Example)
+    async function askAI() {
+        const input = document.getElementById('ai-input').value;
+        const resp = document.getElementById('ai-response');
+        if(!input) return;
+
+        resp.innerHTML = "Thinking...";
+        // This is a placeholder for a free AI API call like Gemini or Groq
+        setTimeout(() => {
+            resp.innerHTML = "<b>KasiAI:</b> I'm currently processing your request about '" + input + "'. To get the most accurate info, I'm checking Parys community updates!";
+        }, 1000);
+    }
+
+    // UI HELPERS
+    function openAI() { document.getElementById('ai-modal').style.display = 'flex'; }
+    function closeModals() { document.querySelectorAll('.kasi-modal').forEach(m => m.style.display = 'none'); }
+    
+    function showPage(id, el) {
+        document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function copyInvite() {
+        navigator.clipboard.writeText(document.getElementById('invite-link').innerText);
+        alert("Invite link copied! Send it to your WhatsApp groups.");
+    }
+
+    async function handleLogin() {
+        const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
+        const { error } = await _supabase.auth.signInWithPassword({ email: e, password: p });
+        if(error) { // If login fails, try signup
+            await _supabase.auth.signUp({ email: e, password: p });
+            alert("Check email for confirmation!");
+        } else location.reload();
     }
 
     async function loadPosts() {
         const { data: posts } = await _supabase.from('posts').select('*').order('created_at', { ascending: false });
         const feed = document.getElementById('kasi-feed');
-        feed.innerHTML = '';
-        posts.forEach(post => {
-            const badge = post.badge_type === 'blue' ? '<i class="fa fa-check-circle" style="color:#3ea6ff; margin-left:5px;"></i>' : 
-                         (post.badge_type === 'gold' ? '<i class="fa fa-certificate" style="color:#f1c40f; margin-left:5px;"></i>' : '');
-            feed.innerHTML += `
-                <div class="wall-post">
-                    <div class="post-user">
-                        <div class="user-avatar"></div>
-                        <div class="user-info"><b>${post.username}${badge}</b><br><small style="color:#555">${post.location}</small></div>
-                    </div>
-                    <div class="post-content">${post.content}</div>
-                </div>`;
-        });
-    }
-
-    // === AUTH LOGIC ===
-    async function handleSignUp() {
-        const email = document.getElementById('reg-email').value, pass = document.getElementById('reg-pass').value;
-        const name = document.getElementById('reg-user').value, kasi = document.getElementById('reg-kasi').value;
-        const { data, error } = await _supabase.auth.signUp({ email, password: pass });
-        if(error) return alert(error.message);
-        await _supabase.from('profiles').insert([{ id: data.user.id, username: name, kasi_location: kasi, badge_type: selectedBadge }]);
-        alert("Account Created! You can now log in.");
-        location.reload();
-    }
-
-    async function handleLogin() {
-        const email = document.getElementById('login-email').value, pass = document.getElementById('login-pass').value;
-        const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
-        if(error) alert(error.message); else location.reload();
-    }
-
-    function enterSite() {
-        document.getElementById('auth-overlay').style.display = 'none';
-        document.getElementById('main-site').classList.add('loaded');
-        document.getElementById('user-welcome').innerText = currentUser.username;
-        document.getElementById('user-kasi').innerText = currentUser.kasi_location;
-        loadPosts();
-    }
-
-    function showPage(p, el) {
-        document.querySelectorAll('.page-content').forEach(pg => pg.classList.remove('active-page'));
-        document.getElementById(p).classList.add('active-page');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        if(el) el.classList.add('active');
-    }
-    function pickBadge(t, el) { selectedBadge = t; document.querySelectorAll('.badge-opt').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
-    function toggleAuth() { document.getElementById('signup-box').style.display = (document.getElementById('signup-box').style.display === 'none' ? 'block' : 'none'); document.getElementById('login-box').style.display = (document.getElementById('login-box').style.display === 'none' ? 'block' : 'none'); }
-    async function logout() { await _supabase.auth.signOut(); location.reload(); }
-</script>
-</body>
-</html>
+        feed.innerHTML = posts.map(p => `
+            <div style="background:var(--card); padding:20px; border-radius:20px; margin-bottom
